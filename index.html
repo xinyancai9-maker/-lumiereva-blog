@@ -166,7 +166,7 @@
     @keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
     .post-card{animation:fadeIn .4s ease-out}
 
-    /* ----- 高级昵称弹窗样式 ----- */
+    /* ----- 高级昵称弹窗样式 (淡粉色打字机) ----- */
     #nickname-overlay{
       position:fixed;
       top:0;
@@ -247,35 +247,44 @@
       transform:translateY(-2px);
       box-shadow:0 12px 28px rgba(212,163,115,0.4);
     }
-    .nickname-greeting{
-      font-size:2.2rem;
-      font-weight:300;
-      color:var(--accent);
-      margin:1rem 0;
-      animation:greetingPop 0.6s ease;
+    /* 欢迎语区域：淡粉色，大字 */
+    .nickname-greeting {
+      font-size: 3rem;
+      color: #f8a5a5; /* 淡粉色 */
+      font-weight: 300;
+      line-height: 1.2;
+      min-height: 6rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
     }
-    .nickname-greeting small{
-      font-size:1rem;
-      color:var(--text2);
-      display:block;
-      margin-top:0.5rem;
+    .nickname-greeting #greeting-main {
+      display: inline-block;
+      font-weight: 350;
+      letter-spacing: 0.02em;
     }
-    @keyframes greetingPop{
-      0%{opacity:0;transform:scale(0.9);}
-      70%{transform:scale(1.02);}
-      100%{opacity:1;transform:scale(1);}
+    .nickname-greeting small {
+      font-size: 1.2rem;
+      color: var(--text2);
+      display: block;
+      margin-top: 1rem;
+      font-weight: 300;
+      opacity: 0.8;
+      animation: fadeIn 0.5s;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(5px); }
+      to { opacity: 0.8; transform: translateY(0); }
+    }
+    [data-theme="dark"] .nickname-greeting {
+      color: #f2a2a2; /* 深色模式下保持可见的淡粉 */
+    }
+    [data-theme="dark"] .nickname-greeting small {
+      color: #aaa;
     }
     .hidden{
       display:none !important;
-    }
-    /* 深色模式适配 */
-    [data-theme="dark"] .nickname-modal{
-      background:var(--white); /* 深色模式下保持卡片为深色背景 */
-      border-color:var(--border);
-    }
-    [data-theme="dark"] .nickname-input{
-      background:var(--bg2);
-      color:var(--text);
     }
   </style>
 </head>
@@ -293,9 +302,12 @@
         <input type="text" id="nickname-input-field" class="nickname-input" placeholder="你的名字 / Your name" autofocus>
         <button class="nickname-btn" id="nickname-submit">开始 / Enter</button>
       </div>
-      <!-- 欢迎状态：隐藏上述，显示greeting -->
+      <!-- 欢迎状态：隐藏上述，显示打字机欢迎语 (淡粉色大字) -->
       <div id="modal-greeting" class="hidden">
-        <div class="nickname-greeting" id="greeting-message"></div>
+        <div class="nickname-greeting">
+          <span id="greeting-main"></span>
+          <small id="greeting-small" style="display: none;">欢迎</small>
+        </div>
       </div>
     </div>
   </div>
@@ -405,28 +417,56 @@
     const overlay = document.getElementById('nickname-overlay');
     const modalAsk = document.getElementById('modal-ask');
     const modalGreeting = document.getElementById('modal-greeting');
-    const greetingMsg = document.getElementById('greeting-message');
+    const greetingMain = document.getElementById('greeting-main');
+    const greetingSmall = document.getElementById('greeting-small');
     const nicknameInput = document.getElementById('nickname-input-field');
     const submitBtn = document.getElementById('nickname-submit');
     const mainContent = document.getElementById('main-content');
 
-    // ----- 昵称逻辑 -----
+    // ----- 打字机效果函数 -----
+    function typeWriter(text, element, speed, callback) {
+      let i = 0;
+      element.innerHTML = ''; // 清空
+      function typing() {
+        if (i < text.length) {
+          element.innerHTML += text.charAt(i);
+          i++;
+          setTimeout(typing, speed);
+        } else {
+          if (callback) callback();
+        }
+      }
+      typing();
+    }
+
+    // ----- 昵称逻辑 (淡粉色打字机) -----
     function showGreetingAndEnter(name) {
-      // 隐藏提问区，显示欢迎语
+      // 转义用户输入，防止XSS
+      const safeName = name.replace(/[&<>"]/g, function(m) {
+        if (m === '&') return '&amp;';
+        if (m === '<') return '&lt;';
+        if (m === '>') return '&gt;';
+        if (m === '"') return '&quot;';
+        return m;
+      });
       modalAsk.classList.add('hidden');
       modalGreeting.classList.remove('hidden');
-      greetingMsg.innerHTML = `hi, ${name} <small>欢迎</small>`;
-
-      // 延迟后关闭弹窗，显示主内容
-      setTimeout(() => {
-        overlay.style.opacity = '0';
+      
+      // 打字机效果显示 "hi, " + safeName
+      const text = `hi, ${safeName}`;
+      typeWriter(text, greetingMain, 120, function() {
+        // 打字完成，显示 "欢迎"
+        greetingSmall.style.display = 'block';
+        // 延迟后关闭弹窗，进入主页面
         setTimeout(() => {
-          overlay.classList.add('hidden');
-          mainContent.style.display = 'block'; // 显示主内容
-          // 重新触发花瓣颜色适应（以防主题在弹窗前切换）
-          if (typeof initPetals === 'function') initPetals();
-        }, 500);
-      }, 1500);
+          overlay.style.opacity = '0';
+          setTimeout(() => {
+            overlay.classList.add('hidden');
+            mainContent.style.display = 'block';
+            if (typeof initPetals === 'function') initPetals(); // 重新适应花瓣颜色
+          }, 500);
+        }, 1000); // 等待1秒让"欢迎"展示
+      });
     }
 
     function handleNicknameSubmit() {
@@ -688,7 +728,7 @@
     window.toggleTheme = toggleTheme;
     window.showPostDetail = showPostDetail;
     window.goBack = goBack;
-    window.initPetals = initPetals; // 供主题切换时调用
+    window.initPetals = initPetals;
   </script>
 </body>
 </html>
