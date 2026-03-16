@@ -166,7 +166,7 @@
     @keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
     .post-card{animation:fadeIn .4s ease-out}
 
-    /* ----- 高级昵称弹窗样式 (淡粉色打字机) ----- */
+    /* ----- 高级昵称弹窗样式 (淡粉色自然流畅) ----- */
     #nickname-overlay{
       position:fixed;
       top:0;
@@ -247,7 +247,7 @@
       transform:translateY(-2px);
       box-shadow:0 12px 28px rgba(212,163,115,0.4);
     }
-    /* 欢迎语区域：淡粉色，大字 */
+    /* 欢迎语区域：淡粉色，大字，自然显现 */
     .nickname-greeting {
       font-size: 3rem;
       color: #f8a5a5; /* 淡粉色 */
@@ -258,6 +258,11 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
+      animation: greetingAppear 0.8s ease-out; /* 自然显现动画 */
+    }
+    @keyframes greetingAppear {
+      0% { opacity: 0; transform: scale(0.95); }
+      100% { opacity: 1; transform: scale(1); }
     }
     .nickname-greeting #greeting-main {
       display: inline-block;
@@ -302,7 +307,7 @@
         <input type="text" id="nickname-input-field" class="nickname-input" placeholder="你的名字 / Your name" autofocus>
         <button class="nickname-btn" id="nickname-submit">开始 / Enter</button>
       </div>
-      <!-- 欢迎状态：隐藏上述，显示打字机欢迎语 (淡粉色大字) -->
+      <!-- 欢迎状态：隐藏上述，显示自然显现的欢迎语 (淡粉色大字) -->
       <div id="modal-greeting" class="hidden">
         <div class="nickname-greeting">
           <span id="greeting-main"></span>
@@ -423,23 +428,7 @@
     const submitBtn = document.getElementById('nickname-submit');
     const mainContent = document.getElementById('main-content');
 
-    // ----- 打字机效果函数 -----
-    function typeWriter(text, element, speed, callback) {
-      let i = 0;
-      element.innerHTML = ''; // 清空
-      function typing() {
-        if (i < text.length) {
-          element.innerHTML += text.charAt(i);
-          i++;
-          setTimeout(typing, speed);
-        } else {
-          if (callback) callback();
-        }
-      }
-      typing();
-    }
-
-    // ----- 昵称逻辑 (淡粉色打字机) -----
+    // ----- 昵称逻辑 (自然流畅显现，自然消散) -----
     function showGreetingAndEnter(name) {
       // 转义用户输入，防止XSS
       const safeName = name.replace(/[&<>"]/g, function(m) {
@@ -449,24 +438,24 @@
         if (m === '"') return '&quot;';
         return m;
       });
+      
+      // 隐藏提问框，显示欢迎区域
       modalAsk.classList.add('hidden');
       modalGreeting.classList.remove('hidden');
       
-      // 打字机效果显示 "hi, " + safeName
-      const text = `hi, ${safeName}`;
-      typeWriter(text, greetingMain, 120, function() {
-        // 打字完成，显示 "欢迎"
-        greetingSmall.style.display = 'block';
-        // 延迟后关闭弹窗，进入主页面
+      // 直接设置欢迎语内容（无打字机）
+      greetingMain.innerText = `hi, ${safeName}`;
+      greetingSmall.style.display = 'block'; // 显示“欢迎”
+      
+      // 让弹窗自然消散：先等待1.5秒让用户看到欢迎语，然后淡出
+      setTimeout(() => {
+        overlay.style.opacity = '0';
         setTimeout(() => {
-          overlay.style.opacity = '0';
-          setTimeout(() => {
-            overlay.classList.add('hidden');
-            mainContent.style.display = 'block';
-            if (typeof initPetals === 'function') initPetals(); // 重新适应花瓣颜色
-          }, 500);
-        }, 1000); // 等待1秒让"欢迎"展示
-      });
+          overlay.classList.add('hidden');
+          mainContent.style.display = 'block'; // 显示主内容
+          if (typeof initPetals === 'function') initPetals(); // 重新适应花瓣颜色
+        }, 500); // 与overlay的transition一致
+      }, 1500); // 1.5秒欣赏欢迎语
     }
 
     function handleNicknameSubmit() {
