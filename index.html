@@ -163,95 +163,6 @@
       color:var(--text);
       white-space:pre-line;
     }
-    /* 点赞&评论区样式 */
-    .post-interaction{
-      margin-top:2rem;
-      border-top:1px solid var(--border);
-      padding-top:1.5rem;
-    }
-    .like-area{
-      display:flex;
-      align-items:center;
-      gap:0.5rem;
-      margin-bottom:2rem;
-      font-size:1.1rem;
-    }
-    .like-icon{
-      font-size:1.8rem;
-      color:#f06292; /* 粉色心形 */
-      cursor:pointer;
-      transition:transform 0.2s;
-      user-select:none;
-    }
-    .like-icon:hover{
-      transform:scale(1.1);
-    }
-    .like-count{
-      font-size:1.2rem;
-      color:var(--text2);
-    }
-    .comment-section h4{
-      font-size:1.2rem;
-      font-weight:400;
-      margin-bottom:1rem;
-      color:var(--text2);
-    }
-    .comment-list{
-      list-style:none;
-      margin-bottom:1.5rem;
-    }
-    .comment-item{
-      background:var(--bg2);
-      border-radius:20px;
-      padding:0.8rem 1.2rem;
-      margin-bottom:0.8rem;
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      font-size:0.95rem;
-    }
-    .comment-text{
-      word-break:break-word;
-      color:var(--text);
-    }
-    .comment-time{
-      font-size:0.7rem;
-      color:var(--text2);
-      margin-left:1rem;
-      white-space:nowrap;
-    }
-    .comment-input-area{
-      display:flex;
-      gap:0.5rem;
-    }
-    .comment-input{
-      flex:1;
-      padding:0.8rem 1.2rem;
-      border-radius:40px;
-      border:1px solid var(--border);
-      background:var(--white);
-      font-family:'Zen Maru Gothic',sans-serif;
-      font-size:0.9rem;
-      color:var(--text);
-      outline:none;
-    }
-    .comment-input:focus{
-      border-color:var(--accent);
-    }
-    .comment-submit{
-      background:var(--accent);
-      color:white;
-      border:none;
-      padding:0 1.8rem;
-      border-radius:40px;
-      font-size:0.9rem;
-      font-weight:500;
-      cursor:pointer;
-      transition:background 0.2s;
-    }
-    .comment-submit:hover{
-      background:#c38e5a;
-    }
     @keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
     .post-card{animation:fadeIn .4s ease-out}
 
@@ -362,8 +273,12 @@
       opacity: 0.8;
       animation: fadeIn 0.5s;
     }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(5px); }
+      to { opacity: 0.8; transform: translateY(0); }
+    }
     [data-theme="dark"] .nickname-greeting {
-      color: #f2a2a2;
+      color: #f2a2a2; /* 深色模式下保持可见的淡粉 */
     }
     [data-theme="dark"] .nickname-greeting small {
       color: #aaa;
@@ -371,21 +286,65 @@
     .hidden{
       display:none !important;
     }
+
+    /* ----- 音乐播放器样式 (右下角悬浮) ----- */
+    #music-player-container {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      z-index: 1000;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+      transition: all 0.3s ease;
+      opacity: 0.95;
+      border: 1px solid var(--border);
+      pointer-events: auto; /* 确保可以点击 */
+    }
+    #music-player-container:hover {
+      opacity: 1;
+      box-shadow: 0 12px 40px rgba(0,0,0,0.2);
+    }
+    #music-player-container iframe {
+      display: block;
+      border: none;
+      width: 330px;
+      height: 86px;
+      transition: all 0.3s ease;
+    }
+    /* 移动端适配 */
+    @media (max-width: 600px) {
+      #music-player-container {
+        bottom: 10px;
+        right: 10px;
+      }
+      #music-player-container iframe {
+        width: 280px;
+        height: 80px;
+      }
+    }
+    /* 深色模式适配播放器边框 */
+    [data-theme="dark"] #music-player-container {
+      border-color: var(--border);
+      background: #2a2a2a;
+    }
   </style>
 </head>
 <body>
-  <!-- 飘落花瓣 canvas -->
+  <!-- 飘落花瓣 canvas (动态元素) -->
   <canvas id="petal-canvas"></canvas>
 
-  <!-- 昵称弹窗 -->
+  <!-- 昵称弹窗 (始终存在，通过JS控制显示/隐藏) -->
   <div id="nickname-overlay">
     <div class="nickname-modal" id="nickname-modal-card">
+      <!-- 初始状态：提问 + 输入框 + 按钮 -->
       <div id="modal-ask">
         <h2>✨ 我应该怎么称呼你？</h2>
         <p>What should I call you?</p>
         <input type="text" id="nickname-input-field" class="nickname-input" placeholder="你的名字 / Your name" autofocus>
         <button class="nickname-btn" id="nickname-submit">开始 / Enter</button>
       </div>
+      <!-- 欢迎状态：隐藏上述，显示打字机欢迎语 (淡粉色大字) -->
       <div id="modal-greeting" class="hidden">
         <div class="nickname-greeting">
           <span id="greeting-main"></span>
@@ -395,7 +354,7 @@
     </div>
   </div>
 
-  <!-- 主内容 -->
+  <!-- 主内容（初始隐藏） -->
   <div id="main-content">
     <header>
       <a class="logo" onclick="showPage('home')">lumiere<span>va</span></a>
@@ -418,6 +377,7 @@
             <a href="mailto:hello@lumiereva.com" title="Email">✉️</a>
           </div>
         </div>
+        <!-- 首页搜索框 -->
         <div class="search-wrapper">
           <span class="search-icon">🔍</span>
           <input type="text" class="search-input" id="search-home" placeholder="搜索文章...">
@@ -432,6 +392,7 @@
       <!-- 归档页 -->
       <div id="archive" class="page">
         <h2 style="text-align:center;margin-bottom:2rem;font-weight:300;letter-spacing:.1em">📚 所有文章</h2>
+        <!-- 归档搜索框 -->
         <div class="search-wrapper">
           <span class="search-icon">🔍</span>
           <input type="text" class="search-input" id="search-archive" placeholder="搜索文章...">
@@ -442,7 +403,7 @@
           <a onclick="showPage('home')">← 返回首页</a>
         </div>
       </div>
-      <!-- 文章详情页 (增加了点赞和评论区) -->
+      <!-- 文章详情页 -->
       <div id="post-detail" class="page">
         <div style="max-width:800px; margin:0 auto;">
           <button class="back-btn" id="detail-backBtn" onclick="goBack()">← 返回</button>
@@ -457,21 +418,6 @@
             <h2 class="post-title" id="detail-title"></h2>
             <div class="post-excerpt" id="detail-content"></div>
           </div>
-          <!-- 点赞和评论区 (新增) -->
-          <div class="post-interaction" id="post-interaction">
-            <div class="like-area">
-              <span class="like-icon" id="like-icon">❤️</span>
-              <span class="like-count" id="like-count">0</span> 人喜欢
-            </div>
-            <div class="comment-section">
-              <h4>📝 评论</h4>
-              <ul class="comment-list" id="comment-list"></ul>
-              <div class="comment-input-area">
-                <input type="text" class="comment-input" id="comment-input" placeholder="写下你的评论...">
-                <button class="comment-submit" id="comment-submit">发表</button>
-              </div>
-            </div>
-          </div>
         </div>
       </div>
     </main>
@@ -480,8 +426,11 @@
     </footer>
   </div>
 
+  <!-- 音乐播放器容器 (独立于主内容，始终显示) -->
+  <div id="music-player-container"></div>
+
   <script>
-    // ----- 文章数据 -----
+    // ----- 文章数据（美丽新世界感悟已替换）-----
     const posts = [
       {title:"今天天气真好",date:"2026-03-15",tags:["日常"],excerpt:"阳光明媚，适合出门散步。"},
       {title:"学习新技能的第二天",date:"2026-03-14",tags:["学习","成长"],excerpt:"今天学会了如何使用 GitHub Pages，建立了自己的博客。"},
@@ -499,11 +448,11 @@
 
     // ----- 全局变量 -----
     const allTags = [...new Set(posts.flatMap(p => p.tags))];
-    let currentTag = null;
-    let searchTerm = '';
-    let lastPage = 'home';
+    let currentTag = null;          // 当前选中的标签
+    let searchTerm = '';            // 当前搜索词
+    let lastPage = 'home';          // 返回用
 
-    // DOM 元素
+    // DOM 元素 (主内容)
     const searchHome = document.getElementById('search-home');
     const searchArchive = document.getElementById('search-archive');
     const clearHome = document.getElementById('clear-home');
@@ -519,13 +468,10 @@
     const submitBtn = document.getElementById('nickname-submit');
     const mainContent = document.getElementById('main-content');
 
-    // 当前文章标题 (用于点赞评论)
-    let currentArticleTitle = null;
-
-    // ----- 打字机效果函数 (保留原有) -----
+    // ----- 打字机效果函数 -----
     function typeWriter(text, element, speed, callback) {
       let i = 0;
-      element.innerHTML = '';
+      element.innerHTML = ''; // 清空
       function typing() {
         if (i < text.length) {
           element.innerHTML += text.charAt(i);
@@ -538,8 +484,9 @@
       typing();
     }
 
-    // ----- 昵称逻辑 -----
+    // ----- 昵称逻辑 (淡粉色打字机) -----
     function showGreetingAndEnter(name) {
+      // 转义用户输入，防止XSS
       const safeName = name.replace(/[&<>"]/g, function(m) {
         if (m === '&') return '&amp;';
         if (m === '<') return '&lt;';
@@ -549,33 +496,43 @@
       });
       modalAsk.classList.add('hidden');
       modalGreeting.classList.remove('hidden');
+      
+      // 打字机效果显示 "hi, " + safeName
       const text = `hi, ${safeName}`;
       typeWriter(text, greetingMain, 120, function() {
+        // 打字完成，显示 "欢迎"
         greetingSmall.style.display = 'block';
+        // 延迟后关闭弹窗，进入主页面
         setTimeout(() => {
           overlay.style.opacity = '0';
           setTimeout(() => {
             overlay.classList.add('hidden');
             mainContent.style.display = 'block';
-            if (typeof initPetals === 'function') initPetals();
+            if (typeof initPetals === 'function') initPetals(); // 重新适应花瓣颜色
           }, 500);
-        }, 1000);
+        }, 1000); // 等待1秒让"欢迎"展示
       });
     }
 
     function handleNicknameSubmit() {
       let name = nicknameInput.value.trim();
-      if (name === '') name = '访客';
+      if (name === '') {
+        name = '访客'; // 默认
+      }
+      // 存储到 sessionStorage (当前标签页有效)
       sessionStorage.setItem('nickname', name);
       showGreetingAndEnter(name);
     }
 
+    // 检查是否已有昵称 (同一标签页刷新后不再弹窗)
     function checkNickname() {
       const savedName = sessionStorage.getItem('nickname');
       if (savedName) {
+        // 直接进入，不显示弹窗
         overlay.classList.add('hidden');
         mainContent.style.display = 'block';
       } else {
+        // 显示弹窗，隐藏主内容
         overlay.classList.remove('hidden');
         overlay.style.opacity = '1';
         modalAsk.classList.remove('hidden');
@@ -586,12 +543,15 @@
       }
     }
 
+    // 绑定提交事件
     submitBtn.addEventListener('click', handleNicknameSubmit);
     nicknameInput.addEventListener('keypress', (e) => {
-      if (e.key === 'Enter') handleNicknameSubmit();
+      if (e.key === 'Enter') {
+        handleNicknameSubmit();
+      }
     });
 
-    // ----- 搜索同步等函数 (保持不变) -----
+    // ----- 同步两个搜索框的值和清除按钮显示 -----
     function syncSearchInputs(value) {
       if (searchHome) searchHome.value = value;
       if (searchArchive) searchArchive.value = value;
@@ -604,15 +564,20 @@
       }
     }
 
+    // ----- 更新文章列表（根据 currentTag 和 searchTerm）-----
     function renderPosts() {
       let filtered = posts;
-      if (currentTag) filtered = filtered.filter(p => p.tags.includes(currentTag));
+      if (currentTag) {
+        filtered = filtered.filter(p => p.tags.includes(currentTag));
+      }
       if (searchTerm.trim() !== '') {
         const term = searchTerm.trim().toLowerCase();
         filtered = filtered.filter(p => 
-          p.title.toLowerCase().includes(term) || p.excerpt.toLowerCase().includes(term)
+          p.title.toLowerCase().includes(term) || 
+          p.excerpt.toLowerCase().includes(term)
         );
       }
+
       const html = filtered.map(p => `
         <article class="post-card" onclick='showPostDetail("${p.title.replace(/'/g, "\\'")}")'>
           <div class="post-meta">
@@ -623,34 +588,41 @@
           <p class="post-excerpt">${p.excerpt.replace(/\n/g, '<br>')}</p>
         </article>
       `).join('') || '<p style="text-align:center; color:var(--text2); padding:2rem;">没有找到相关文章</p>';
+
       document.getElementById('posts').innerHTML = html;
       document.getElementById('archivePosts').innerHTML = html;
     }
 
+    // ----- 标签渲染 -----
     function renderTags(activeTag = null) {
       const container = document.getElementById('tagsFilter');
       container.innerHTML = `<span class="tag-filter ${!activeTag ? 'active' : ''}" onclick="filterByTag(null)">全部</span>` +
         allTags.map(tag => `<span class="tag-filter ${activeTag === tag ? 'active' : ''}" onclick="filterByTag('${tag}')">${tag}</span>`).join('');
     }
 
+    // ----- 标签点击 -----
     function filterByTag(tag) {
       currentTag = tag;
       renderTags(tag);
       renderPosts();
     }
 
+    // ----- 搜索处理 -----
     function handleSearch(e) {
-      searchTerm = e.target.value;
-      syncSearchInputs(searchTerm);
+      const value = e.target.value;
+      searchTerm = value;
+      syncSearchInputs(value);
       renderPosts();
     }
 
+    // ----- 清除搜索 -----
     function clearSearch() {
       searchTerm = '';
       syncSearchInputs('');
       renderPosts();
     }
 
+    // ----- 页面切换 -----
     function showPage(pageId) {
       document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
       document.getElementById(pageId).classList.add('active');
@@ -661,98 +633,15 @@
       window.scrollTo(0, 0);
     }
 
-    // ----- 点赞和评论功能 -----
-    // 存储结构: localStorage键名 "blog_"+文章标题 (特殊字符转义)
-    function getStorageKey(title) {
-      return 'blog_' + title.replace(/[^a-zA-Z0-9\u4e00-\u9fa5]/g, '_');
-    }
-
-    function loadLikesAndComments(title) {
-      const key = getStorageKey(title);
-      const data = JSON.parse(localStorage.getItem(key)) || { likes: 0, comments: [] };
-      document.getElementById('like-count').innerText = data.likes;
-      const commentList = document.getElementById('comment-list');
-      commentList.innerHTML = data.comments.map(c => 
-        `<li class="comment-item"><span class="comment-text">${escapeHtml(c.text)}</span><span class="comment-time">${c.time}</span></li>`
-      ).join('');
-    }
-
-    function saveLikes(title, likes) {
-      const key = getStorageKey(title);
-      const data = JSON.parse(localStorage.getItem(key)) || { likes: 0, comments: [] };
-      data.likes = likes;
-      localStorage.setItem(key, JSON.stringify(data));
-    }
-
-    function saveComment(title, commentText) {
-      if (!commentText.trim()) return;
-      const key = getStorageKey(title);
-      const data = JSON.parse(localStorage.getItem(key)) || { likes: 0, comments: [] };
-      const newComment = {
-        text: commentText.trim(),
-        time: new Date().toLocaleString('zh-CN', { hour12: false, hour: '2-digit', minute: '2-digit', month:'numeric', day:'numeric' })
-      };
-      data.comments.push(newComment);
-      localStorage.setItem(key, JSON.stringify(data));
-      loadLikesAndComments(title); // 重新加载
-    }
-
-    // 简单的防XSS转义
-    function escapeHtml(unsafe) {
-      return unsafe.replace(/[&<>"]/g, function(m) {
-        if (m === '&') return '&amp;';
-        if (m === '<') return '&lt;';
-        if (m === '>') return '&gt;';
-        if (m === '"') return '&quot;';
-        return m;
-      });
-    }
-
-    // 绑定点赞和评论事件
-    function bindInteractionEvents() {
-      const likeIcon = document.getElementById('like-icon');
-      const likeCount = document.getElementById('like-count');
-      const submitBtn = document.getElementById('comment-submit');
-      const commentInput = document.getElementById('comment-input');
-
-      // 移除旧监听，重新绑定 (简单处理：先克隆替换)
-      const newLikeIcon = likeIcon.cloneNode(true);
-      likeIcon.parentNode.replaceChild(newLikeIcon, likeIcon);
-      const newSubmitBtn = submitBtn.cloneNode(true);
-      submitBtn.parentNode.replaceChild(newSubmitBtn, submitBtn);
-
-      newLikeIcon.addEventListener('click', function() {
-        if (!currentArticleTitle) return;
-        let count = parseInt(likeCount.innerText, 10) || 0;
-        count += 1;
-        likeCount.innerText = count;
-        saveLikes(currentArticleTitle, count);
-      });
-
-      newSubmitBtn.addEventListener('click', function() {
-        if (!currentArticleTitle) return;
-        const input = document.getElementById('comment-input');
-        saveComment(currentArticleTitle, input.value);
-        input.value = '';
-      });
-
-      // 回车提交
-      const newInput = document.getElementById('comment-input');
-      newInput.addEventListener('keypress', function(e) {
-        if (e.key === 'Enter' && currentArticleTitle) {
-          saveComment(currentArticleTitle, this.value);
-          this.value = '';
-        }
-      });
-    }
-
-    // 修改 showPostDetail 加载点赞评论
+    // ----- 显示文章详情 -----
     function showPostDetail(title) {
       const article = posts.find(p => p.title === title);
       if (!article) return;
 
       const activePage = document.querySelector('.page.active')?.id;
-      if (activePage && activePage !== 'post-detail') lastPage = activePage;
+      if (activePage && activePage !== 'post-detail') {
+        lastPage = activePage;
+      }
 
       document.getElementById('detail-date').innerText = article.date;
       document.getElementById('detail-tags').innerHTML = article.tags.map(t => `<span class="post-tag">${t}</span>`).join('');
@@ -762,13 +651,6 @@
       const isBraveNewWorld = (article.title === "读书笔记：《活着》");
       const imgContainer = document.getElementById('detail-image-container');
       imgContainer.style.display = isBraveNewWorld ? 'block' : 'none';
-
-      // 设置当前文章标题
-      currentArticleTitle = article.title;
-      // 加载点赞评论
-      loadLikesAndComments(article.title);
-      // 绑定事件 (需确保DOM存在)
-      bindInteractionEvents();
 
       showPage('post-detail');
     }
@@ -786,7 +668,7 @@
       if (typeof initPetals === 'function') initPetals();
     }
 
-    // ----- 花瓣动画 -----
+    // ----- 飘落花瓣动画 (Canvas) -----
     const canvas = document.getElementById('petal-canvas');
     let ctx = canvas.getContext('2d');
     let width, height;
@@ -865,6 +747,27 @@
     resizeCanvas();
     animatePetals();
 
+    // ----- 初始化音乐播放器 (网易云外链) -----
+    function initMusicPlayer() {
+      const container = document.getElementById('music-player-container');
+      if (!container) return;
+      
+      // 创建iframe元素
+      const iframe = document.createElement('iframe');
+      // 网易云音乐外链 - 周杰伦《晴天》单曲播放器 (自动播放关闭，用户需手动点击)
+      // 参数说明：type=2 表示单曲，id=347230 是《晴天》的ID，auto=0 不自动播放，height=86 标准高度
+      iframe.src = '//music.163.com/outchain/player?type=2&id=347230&auto=0&height=66';
+      iframe.width = '330';
+      iframe.height = '86';
+      iframe.frameBorder = 'no';
+      iframe.border = '0';
+      iframe.marginWidth = '0';
+      iframe.marginHeight = '0';
+      iframe.allow = 'autoplay'; // 允许自动播放（但浏览器可能仍需用户交互）
+      
+      container.appendChild(iframe);
+    }
+
     // ----- 初始化 -----
     (function init() {
       const savedTheme = localStorage.getItem('theme');
@@ -875,12 +778,17 @@
       renderTags();
       renderPosts();
 
+      // 搜索框事件
       if (searchHome) searchHome.addEventListener('input', handleSearch);
       if (searchArchive) searchArchive.addEventListener('input', handleSearch);
       if (clearHome) clearHome.addEventListener('click', clearSearch);
       if (clearArchive) clearArchive.addEventListener('click', clearSearch);
 
+      // 检查昵称，控制弹窗与主内容显示
       checkNickname();
+
+      // 初始化音乐播放器 (始终加载)
+      initMusicPlayer();
     })();
 
     // 暴露全局函数
