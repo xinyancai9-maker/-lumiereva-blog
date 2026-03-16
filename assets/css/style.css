@@ -1,0 +1,33 @@
+/* 日系波点背景 */
+body {
+  background-color: #fdfbf7;
+  background-image: radial-gradient(#e8d5c4 8%, transparent 8%),
+                    radial-gradient(#e8d5c4 8%, transparent 8%);
+  background-size: 40px 40px;
+  background-position: 0 0, 20px 20px;
+  font-family: "Helvetica Neue", Arial, sans-serif;
+  color: #5a4a42;
+}
+
+/* 半透明白内容容器 */
+.wrapper {
+  background: rgba(255, 255, 255, 0.85);
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+/* 标题配色 */
+h1, h2, h3, h4 {
+  color: #8b6f57;
+  font-weight: 300;
+}
+
+/* 链接配色 */
+a {
+  color: #b08968;
+  text-decoration: none;
+}
+a:hover {
+  text-decoration: underline;
+}
