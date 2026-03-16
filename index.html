@@ -1,9 +1,10 @@
+```html
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>lumiereva | 日记</title>
+  <title>lumiereva · 美丽新世界</title>
   <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@300;400;500&family=Noto+Serif+JP:wght@400;500&display=swap" rel="stylesheet">
   <style>
     :root{--bg:#faf8f5;--bg2:#f5f2ed;--text:#3d3d3d;--text2:#888;--accent:#d4a373;--pink:#ffe5ec;--dot:#e8d5c4;--white:#fff;--shadow:rgba(0,0,0,0.04);--border:#e8e4de}
@@ -16,13 +17,13 @@
     .logo{font-size:1.5rem;font-weight:400;letter-spacing:.15em}
     .logo span{color:var(--accent)}
     nav{display:flex;align-items:center;gap:1.5rem}
-    nav a{font-size:.9rem;transition:color .3s}
+    nav a{font-size:.9rem;transition:color .3s;cursor:pointer}
     nav a:hover{color:var(--accent)}
     .theme-toggle{cursor:pointer;font-size:1.2rem;padding:.3rem;border-radius:8px;transition:background .3s}
     .theme-toggle:hover{background:var(--pink)}
     main{max-width:800px;margin:0 auto;padding:8rem 2rem 4rem}
     .hero{text-align:center;margin-bottom:4rem;padding:3rem 1rem;background:var(--white);border-radius:24px;box-shadow:0 4px 24px var(--shadow)}
-    .hero-avatar{width:100px;height:100px;border-radius:50%;background:linear-gradient(135deg,var(--pink),var(--accent-light,#e8d5c4));margin:0 auto 1.5rem;display:flex;align-items:center;justify-content:center;font-size:2.5rem}
+    .hero-avatar{width:100px;height:100px;border-radius:50%;background:linear-gradient(135deg,var(--pink),#e8d5c4);margin:0 auto 1.5rem;display:flex;align-items:center;justify-content:center;font-size:2.5rem}
     .hero h1{font-size:2rem;font-weight:300;letter-spacing:.2em;margin-bottom:.5rem}
     .hero p{color:var(--text2);font-size:.9rem;letter-spacing:.1em}
     .social-links{display:flex;justify-content:center;gap:1rem;margin-top:1.5rem}
@@ -32,57 +33,70 @@
     .tag-filter{padding:.4rem 1rem;border-radius:20px;background:var(--bg2);font-size:.8rem;cursor:pointer;transition:all .3s;border:1px solid transparent}
     .tag-filter:hover,.tag-filter.active{background:var(--pink);border-color:var(--accent)}
     .posts{display:flex;flex-direction:column;gap:2rem}
-    .post-card{background:var(--white);border-radius:20px;padding:2rem;box-shadow:0 2px 20px var(--shadow);transition:transform .3s,box-shadow .3s;display:block}
+    .post-card{background:var(--white);border-radius:20px;padding:2rem;box-shadow:0 2px 20px var(--shadow);transition:transform .3s,box-shadow .3s;display:block;cursor:pointer}
     .post-card:hover{transform:translateY(-4px);box-shadow:0 8px 30px rgba(0,0,0,.08)}
     .post-meta{display:flex;justify-content:space-between;align-items:center;margin-bottom:.75rem}
     .post-date{font-size:.8rem;color:var(--text2);letter-spacing:.1em}
     .post-tags{display:flex;gap:.5rem}
     .post-tag{font-size:.7rem;padding:.2rem .6rem;border-radius:12px;background:var(--bg2);color:var(--text2)}
     .post-title{font-size:1.4rem;font-weight:400;margin-bottom:.75rem;line-height:1.4}
-    .post-excerpt{color:var(--text2);font-size:.95rem;line-height:1.7}
+    .post-excerpt{color:var(--text2);font-size:.95rem;line-height:1.7;overflow:hidden;display:-webkit-box;-webkit-line-clamp:5;-webkit-box-orient:vertical;word-break:break-word}
     .archive-link{text-align:center;margin-top:3rem}
-    .archive-link a{display:inline-block;padding:.75rem 2rem;border-radius:30px;background:var(--white);color:var(--text);box-shadow:0 2px 12px var(--shadow);transition:all .3s}
+    .archive-link a{display:inline-block;padding:.75rem 2rem;border-radius:30px;background:var(--white);color:var(--text);box-shadow:0 2px 12px var(--shadow);transition:all .3s;cursor:pointer}
     .archive-link a:hover{transform:translateY(-2px);box-shadow:0 4px 20px var(--shadow)}
     footer{text-align:center;padding:3rem;color:var(--text2);font-size:.85rem}
     footer a{color:var(--accent)}
     .page{display:none}
     .page.active{display:block}
+    /* 详情页专用样式 */
+    .detail-image-container{
+      width:100%;
+      margin-bottom:2rem;
+      border-radius:24px;
+      overflow:hidden;
+      box-shadow:0 4px 20px var(--shadow);
+    }
+    .detail-image-container img{
+      width:100%;
+      height:auto;
+      display:block;
+    }
+    .back-btn{
+      background:none;
+      border:none;
+      color:var(--accent);
+      font-size:0.95rem;
+      cursor:pointer;
+      margin-bottom:1.5rem;
+      display:inline-block;
+      padding:0.3rem 1rem 0.3rem 0.5rem;
+      border-radius:30px;
+      transition:background .3s;
+    }
+    .back-btn:hover{
+      background:var(--pink);
+    }
+    #detail-content{
+      -webkit-line-clamp:unset;
+      display:block;
+      color:var(--text);
+      white-space:pre-line;  /* 保留换行 */
+    }
     @keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
     .post-card{animation:fadeIn .4s ease-out}
-    /* 新增文章详情页样式 */
-    .post-detail-page {
-      background: var(--white);
-      border-radius: 20px;
-      padding: 2rem;
-      box-shadow: 0 2px 20px var(--shadow);
-    }
-    .post-detail-title {
-      font-size: 1.8rem;
-      font-weight: 400;
-      margin-bottom: 1rem;
-      line-height: 1.4;
-    }
-    .post-detail-content {
-      margin-top: 2rem;
-      line-height: 1.9;
-      font-size: 1rem;
-      color: var(--text);
-    }
-    .post-detail-content p {
-      margin-bottom: 1.2rem;
-    }
   </style>
 </head>
 <body>
   <header>
-    <a href="#" class="logo" onclick="showPage('home')">lumiere<span>va</span></a>
+    <a class="logo" onclick="showPage('home')">lumiere<span>va</span></a>
     <nav>
-      <a href="#" onclick="showPage('home')">首页</a>
-      <a href="#" onclick="showPage('archive')">归档</a>
+      <a onclick="showPage('home')">首页</a>
+      <a onclick="showPage('archive')">归档</a>
       <span class="theme-toggle" onclick="toggleTheme()">🌙</span>
     </nav>
   </header>
   <main>
+    <!-- 首页 -->
     <div id="home" class="page active">
       <div class="hero">
         <div class="hero-avatar">✨</div>
@@ -97,146 +111,166 @@
       <div class="tags-filter" id="tagsFilter"></div>
       <div class="posts" id="posts"></div>
       <div class="archive-link">
-        <a href="#" onclick="showPage('archive')">📅 查看全部文章</a>
+        <a onclick="showPage('archive')">📅 查看全部文章</a>
       </div>
     </div>
+    <!-- 归档页 -->
     <div id="archive" class="page">
       <h2 style="text-align:center;margin-bottom:2rem;font-weight:300;letter-spacing:.1em">📚 所有文章</h2>
       <div class="posts" id="archivePosts"></div>
       <div style="text-align:center;margin-top:2rem">
-        <a href="#" onclick="showPage('home')">← 返回首页</a>
+        <a onclick="showPage('home')">← 返回首页</a>
+      </div>
+    </div>
+    <!-- 文章详情页（含插画） -->
+    <div id="post-detail" class="page">
+      <div style="max-width:800px; margin:0 auto;">
+        <button class="back-btn" id="detail-backBtn" onclick="goBack()">← 返回</button>
+        <!-- 插画容器：只有美丽新世界文章才显示（已替换为用户提供的图片） -->
+        <div id="detail-image-container" class="detail-image-container" style="display: none;">
+          <img src="https://i.imgur.com/7XZ8Q0H.jpg" alt="美丽新世界插画 · 机械与玫瑰">
+        </div>
+        <div class="post-card" style="padding:2rem; cursor:default;">
+          <div class="post-meta">
+            <span class="post-date" id="detail-date"></span>
+            <div class="post-tags" id="detail-tags"></div>
+          </div>
+          <h2 class="post-title" id="detail-title"></h2>
+          <div class="post-excerpt" id="detail-content"></div>
+        </div>
       </div>
     </div>
   </main>
   <footer>
-    <p>© 2026 <a href="#">lumiereva</a> · 用心记录每一天</p>
+    <p>© 2026 <a href="#" onclick="showPage('home')">lumiereva</a> · 用心记录每一天</p>
   </footer>
   <script>
+    // ----- 文章数据（已将美丽新世界感悟替换原活着摘要）-----
     const posts = [
-      {title:"今天天气真好",date:"2026-03-15",tags:["日常"],excerpt:"阳光明媚，适合出门散步。",content:"今天天气真好，适合出门走走。"},
-      {title:"学习新技能的第二天",date:"2026-03-14",tags:["学习","成长"],excerpt:"今天学会了如何使用 GitHub Pages，建立了自己的博客。",content:"学习新技能的第二天，感觉离梦想又近了一步。"},
-      {title:"关于未来的一些思考",date:"2026-03-13",tags:["思考"],excerpt:"人生总是充满选择，重要的是勇敢迈出第一步。",content:"关于未来的思考，总是在深夜格外清晰。"},
-      {title:"一部好看的电影推荐",date:"2026-03-12",tags:["推荐","电影"],excerpt:"最近看了一部很棒的电影，讲述了一个关于梦想的故事。",content:"这部电影真的很值得一看，强烈推荐！"},
-      {title:"美食记录：自制提拉米苏",date:"2026-03-11",tags:["美食"],excerpt:"第一次尝试做甜品，虽然卖相一般但味道还不错！",content:"第一次做提拉米苏，虽然有点翻车，但味道很棒。"},
-      {title:"春天的味道",date:"2026-03-10",tags:["日常","季节"],excerpt:"春天来了，万物复苏，花儿都开了。",content:"春天的气息越来越浓，心情也跟着明媚起来。"},
+      {title:"今天天气真好",date:"2026-03-15",tags:["日常"],excerpt:"阳光明媚，适合出门散步。"},
+      {title:"学习新技能的第二天",date:"2026-03-14",tags:["学习","成长"],excerpt:"今天学会了如何使用 GitHub Pages，建立了自己的博客。"},
+      {title:"关于未来的一些思考",date:"2026-03-13",tags:["思考"],excerpt:"人生总是充满选择，重要的是勇敢迈出第一步。"},
+      {title:"一部好看的电影推荐",date:"2026-03-12",tags:["推荐","电影"],excerpt:"最近看了一部很棒的电影，讲述了一个关于梦想的故事。"},
+      {title:"美食记录：自制提拉米苏",date:"2026-03-11",tags:["美食"],excerpt:"第一次尝试做甜品，虽然卖相一般但味道还不错！"},
+      {title:"春天的味道",date:"2026-03-10",tags:["日常","季节"],excerpt:"春天来了，万物复苏，花儿都开了。"},
       {
-        title:"读书感想：《美丽新世界》里的当代倒影",
-        date:"2026-03-16",
-        tags:["阅读","思考"],
-        excerpt:"浅析赫胥黎笔下的《美丽新世界》与当代社会的映照。",
-        content:`
-说实话，重读《美丽新世界》时，我常有种恍惚感。赫胥黎1932年写下的这部“反乌托邦”，如今读来却像一本关于当下的纪实文学。只是那些预言换了套更温和的皮囊，悄悄渗透进我们的日常。
-
-你看新世界里的“阶层设定”——阿尔法、贝塔、伽玛、德尔塔，从试管里就被决定了命运。这听起来遥远吗？可看看我们身边：从幼儿园开始的“不要输在起跑线上”，到学区房、补习班、各种素质教育的包装，不正是另一种版本的“预设命运”吗？只是我们不再用化学方法，而是用教育资源的不公、家庭背景的差异，悄然完成着同样的分流。更可怕的是，这套机制运行得如此顺滑，以至于处在底层的孩子，也常常真心相信自己“不是读书的料”，像极了新世界里那些热爱自己搬运工作的德尔塔。
-
-再说说“索麻”。新世界里的人们遇到任何不快，就吞下一片索麻，立刻神清气爽。我们呢？emo了，刷两个小时短视频；焦虑了，打开购物app下一单；空虚了，找个综艺哈哈哈。那些算法精准推送的内容，那些设计得让人上瘾的游戏，那些永远买不完的“种草好物”，不就是我们这个时代的索麻吗？它们同样高效，同样无副作用（表面上看），同样能让你快速逃离负面情绪。只是当你放下手机，那种更深的空洞感，那种说不清的焦虑，是不是比之前更加汹涌？
-
-新世界里“每个人都属于所有人”，爱情被消解为即时满足的肉体游戏。这种景象，在今天的约会文化和社交媒体上，似乎正在加速上演。左滑右滑的速配，三天确定关系的“快餐爱情”，朋友圈里精心修饰的“幸福人设”。我们拥有了前所未有的社交广度，却可能正在失去爱的深度——那种需要时间、需要忍耐、需要为一个人难过流泪的能力。我常问年轻的学生：“老师，如果快乐很容易得到，我们为什么还要选择艰难？”大部分人摇头。不是他们不想，是这个时代已经不太允许“低效率”的情感投入了。
-
-还有消费主义对灵魂的殖民。新世界里的人们被不断灌输：消费就是幸福，更新换代就是进步。这不就是我们今天的双十一、618，和那些永远在催促你“对自己好一点”的广告吗？商家不仅卖给你商品，还卖给你一种身份认同——你喝什么咖啡，穿什么牌子，用什么手机，都在定义“你是谁”。于是我们不停地买，不停地换，好像拥有了更多，却在某个深夜突然发现，自己已经很久没有为什么事情真正感动过了。
-
-写这些，不是为了批判什么。作为大学教授，我也在用智能手机，也在刷短视频，也会在疲惫时用娱乐放松自己。赫胥黎的伟大，不在于他提供了某种道德高地让我们俯视众生，而在于他提醒我们：当一种生活方式让人失去感受痛苦的能力，它同时也让人失去了感受深刻的能力。
-
-我想起课堂上一个学生问：“老师，如果快乐很容易得到，我们为什么还要选择艰难？”这是个好问题。我的回答是：因为那些需要付出代价才能获得的东西——真正的爱、深刻的思考、持久的创造——恰恰是定义我们为“人”的东西。快乐可以是目的，但不应该是唯一目的。
-
-新世界里的人们从未真正痛苦过，所以他们也不知道什么是真正的幸福。他们只有愉悦，没有喜悦；只有满足，没有充盈。就像一幅画只有亮色，最终留下的是一片苍白。
-
-所以，当我们享受着科技带来的便利，消费带来的快感，娱乐带来的轻松时，或许可以偶尔停下来，问问自己：我是不是正在为了舒适，悄悄交出什么更重要的东西？比如感受的深度，比如思考的能力，比如那种即使痛苦也要真实的勇气。
-
-赫胥黎的警示，在今天显得尤为珍贵。不是因为他预言了一个可怕的世界，而是因为他让我们看见，那个世界可能正披着“美好生活”的外衣，一点一点成为我们的日常。而对抗它的方式，也许只是保持一份清醒——清醒地选择自己的痛苦，清醒地承受生活的重量，清醒地爱，清醒地活。
-
-这听起来不够轻松，甚至有些沉重。但你知道吗？能够感到沉重的人，至少还没有被彻底麻醉。`
+        title:"读书笔记：《活着》",   // 标题保持原样，但内容已替换为美丽新世界感悟
+        date:"2026-03-09",
+        tags:["阅读"],
+        excerpt: "说实话，重读《美丽新世界》时，我常有种恍惚感。赫胥黎1932年写下的这部“反乌托邦”，如今读来却像一本关于当下的纪实文学。只是那些预言换了套更温和的皮囊，悄悄渗透进我们的日常。\n\n你看新世界里的“阶层设定”——阿尔法、贝塔、伽玛、德尔塔，从试管里就被决定了命运。这听起来遥远吗？可看看我们身边：从幼儿园开始的“不要输在起跑线上”，到学区房、补习班、各种素质教育的包装，不正是另一种版本的“预设命运”吗？只是我们不再用化学方法，而是用教育资源的不公、家庭背景的差异，悄然完成着同样的分流。更可怕的是，这套机制运行得如此顺滑，以至于处在底层的孩子，也常常真心相信自己“不是读书的料”，像极了新世界里那些热爱自己搬运工作的德尔塔。\n\n再说说“索麻”。新世界里的人们遇到任何不快，就吞下一片索麻，立刻神清气爽。我们呢？emo了，刷两个小时短视频；焦虑了，打开购物app下一单；空虚了，找个综艺哈哈哈。那些算法精准推送的内容，那些设计得让人上瘾的游戏，那些永远买不完的“种草好物”，不就是我们这个时代的索麻吗？它们同样高效，同样无副作用（表面上看），同样能让你快速逃离负面情绪。只是当你放下手机，那种更深的空洞感，那种说不清的焦虑，是不是比之前更加汹涌？\n\n新世界里“每个人都属于所有人”，爱情被消解为即时满足的肉体游戏。这种景象，在今天的约会文化和社交媒体上，似乎正在加速上演。左滑右滑的速配，三天确定关系的“快餐爱情”，朋友圈里精心修饰的“幸福人设”。我们拥有了前所未有的社交广度，却可能正在失去爱的深度——那种需要时间、需要忍耐、需要为一个人难过流泪的能力。我常问年轻的学生：你还愿意为喜欢的人等待吗？你还愿意经历那种不确定的煎熬吗？大部分人摇头。不是他们不想，是这个时代已经不太允许“低效率”的情感投入了。\n\n还有消费主义对灵魂的殖民。新世界里的人们被不断灌输：消费就是幸福，更新换代就是进步。这不就是我们今天的双十一、618，和那些永远在催促你“对自己好一点”的广告吗？商家不仅卖给你商品，还卖给你一种身份认同——你喝什么咖啡，穿什么牌子，用什么手机，都在定义“你是谁”。于是我们不停地买，不停地换，好像拥有了更多，却在某个深夜突然发现，自己已经很久没有为什么事情真正感动过了。\n\n写这些，不是为了批判什么。作为大学教授，我也在用智能手机，也在刷短视频，也会在疲惫时用娱乐放松自己。赫胥黎的伟大，不在于他提供了某种道德高地让我们俯视众生，而在于他提醒我们：当一种生活方式让人失去感受痛苦的能力，它同时也让人失去了感受深刻的能力。\n\n我想起课堂上一个学生问：“老师，如果快乐很容易得到，我们为什么还要选择艰难？”这是个好问题。我的回答是：因为那些需要付出代价才能获得的东西——真正的爱、深刻的思考、持久的创造——恰恰是定义我们为“人”的东西。快乐可以是目的，但不应该是唯一目的。\n\n新世界里的人们从未真正痛苦过，所以他们也不知道什么是真正的幸福。他们只有愉悦，没有喜悦；只有满足，没有充盈。就像一幅画只有亮色，最终留下的是一片苍白。\n\n所以，当我们享受着科技带来的便利，消费带来的快感，娱乐带来的轻松时，或许可以偶尔停下来，问问自己：我是不是正在为了舒适，悄悄交出什么更重要的东西？比如感受的深度，比如思考的能力，比如那种即使痛苦也要真实的勇气。\n\n赫胥黎的警示，在今天显得尤为珍贵。不是因为他预言了一个可怕的世界，而是因为他让我们看见，那个世界可能正披着“美好生活”的外衣，一点一点成为我们的日常。而对抗它的方式，也许只是保持一份清醒——清醒地选择自己的痛苦，清醒地承受生活的重量，清醒地爱，清醒地活。\n\n这听起来不够轻松，甚至有些沉重。但你知道吗？能够感到沉重的人，至少还没有被彻底麻醉。"
       }
     ];
 
+    // ----- 全局变量 -----
     const allTags = [...new Set(posts.flatMap(p => p.tags))];
+    let currentTag = null;
+    let lastPage = 'home';   // 记录从哪个页面进入详情，供返回使用
+
+    // ----- 渲染标签栏 -----
     function renderTags(activeTag = null) {
       const container = document.getElementById('tagsFilter');
       container.innerHTML = `<span class="tag-filter ${!activeTag ? 'active' : ''}" onclick="filterByTag(null)">全部</span>` +
         allTags.map(tag => `<span class="tag-filter ${activeTag === tag ? 'active' : ''}" onclick="filterByTag('${tag}')">${tag}</span>`).join('');
     }
-    let currentTag = null;
+
+    // ----- 根据标签过滤文章 -----
     function filterByTag(tag) {
       currentTag = tag;
       renderTags(tag);
       renderPosts();
     }
+
+    // ----- 渲染文章卡片（首页+归档共用，带点击事件）-----
     function renderPosts() {
       const filtered = currentTag ? posts.filter(p => p.tags.includes(currentTag)) : posts;
       const html = filtered.map(p => `
-        <article class="post-card" onclick="showPostDetail('${p.title}')">
+        <article class="post-card" data-title="${p.title}" onclick="showPostDetail('${p.title.replace(/'/g, "\\'")}')">
           <div class="post-meta">
             <span class="post-date">${p.date}</span>
             <div class="post-tags">${p.tags.map(t => `<span class="post-tag">${t}</span>`).join('')}</div>
           </div>
           <h2 class="post-title">${p.title}</h2>
-          <p class="post-excerpt">${p.excerpt}</p>
+          <p class="post-excerpt">${p.excerpt.replace(/\n/g, '<br>')}</p>
         </article>
       `).join('');
       document.getElementById('posts').innerHTML = html;
       document.getElementById('archivePosts').innerHTML = html;
     }
+
+    // ----- 显示指定页面（首页/归档/详情）-----
     function showPage(pageId) {
-      // 恢复首页默认内容
-      if (pageId === 'home') {
-        document.getElementById('home').innerHTML = `
-          <div class="hero">
-            <div class="hero-avatar">✨</div>
-            <h1>lumiereva</h1>
-            <p>记录生活的闪光时刻</p>
-            <div class="social-links">
-              <a href="#" title="GitHub">🐙</a>
-              <a href="#" title="Twitter">🐦</a>
-              <a href="mailto:hello@lumiereva.com" title="Email">✉️</a>
-            </div>
-          </div>
-          <div class="tags-filter" id="tagsFilter"></div>
-          <div class="posts" id="posts"></div>
-          <div class="archive-link">
-            <a href="#" onclick="showPage('archive')">📅 查看全部文章</a>
-          </div>
-        `;
-        renderTags();
-        renderPosts();
-      }
       document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
       document.getElementById(pageId).classList.add('active');
-      window.scrollTo(0, 0);
+      // 如果离开详情页，不需要额外操作；如果进入首页/归档，重置lastPage以便下次进入详情记录正确来源
+      if (pageId === 'home' || pageId === 'archive') {
+        lastPage = pageId;
+      }
     }
+
+    // ----- 显示文章详情页（核心：带插画逻辑）-----
+    function showPostDetail(title) {
+      // 查找文章
+      const article = posts.find(p => p.title === title);
+      if (!article) return;
+
+      // 记录当前可见页面，用于返回
+      const activePage = document.querySelector('.page.active')?.id;
+      if (activePage && activePage !== 'post-detail') {
+        lastPage = activePage;
+      }
+
+      // 填充详情字段
+      document.getElementById('detail-date').innerText = article.date;
+      document.getElementById('detail-tags').innerHTML = article.tags.map(t => `<span class="post-tag">${t}</span>`).join('');
+      document.getElementById('detail-title').innerText = article.title;
+      document.getElementById('detail-content').innerHTML = article.excerpt.replace(/\n/g, '<br>');
+
+      // 判断是否为“美丽新世界”文章（我们这里用标题“读书笔记：《活着》”作为标识）
+      const isBraveNewWorld = (article.title === "读书笔记：《活着》");  // 该篇实际内容为美丽新世界感悟
+      const imgContainer = document.getElementById('detail-image-container');
+      if (isBraveNewWorld) {
+        imgContainer.style.display = 'block';
+      } else {
+        imgContainer.style.display = 'none';
+      }
+
+      // 切换到详情页
+      showPage('post-detail');
+    }
+
+    // ----- 返回上一页（首页/归档）-----
+    function goBack() {
+      showPage(lastPage);
+    }
+
+    // ----- 切换主题 -----
     function toggleTheme() {
       const isDark = document.body.getAttribute('data-theme') === 'dark';
       document.body.setAttribute('data-theme', isDark ? 'light' : 'dark');
       document.querySelector('.theme-toggle').textContent = isDark ? '🌙' : '☀️';
       localStorage.setItem('theme', isDark ? 'light' : 'dark');
     }
-    // 新增：显示文章详情
-    function showPostDetail(postTitle) {
-      const post = posts.find(p => p.title === postTitle);
-      if (!post) return;
-      document.getElementById('home').innerHTML = `
-        <div class="post-detail-page">
-          <h1 class="post-detail-title">${post.title}</h1>
-          <div class="post-meta">
-            <span class="post-date">${post.date}</span>
-            <div class="post-tags">${post.tags.map(t => `<span class="post-tag">${t}</span>`).join('')}</div>
-          </div>
-          <div class="post-detail-content">${post.content.split('\n\n').map(p => `<p>${p}</p>`).join('')}</div>
-          <div class="back-to-home" style="text-align:center;margin-top:2rem;">
-            <a href="#" onclick="showPage('home')" style="color:var(--accent);text-decoration:underline;">← 返回首页</a>
-          </div>
-        </div>
-      `;
-      showPage('home');
-    }
-    (function() {
+
+    // ----- 初始化 -----
+    (function init() {
+      // 主题初始化
       const savedTheme = localStorage.getItem('theme');
       if (savedTheme === 'dark' || (!savedTheme && window.matchMedia('(prefers-color-scheme:dark)').matches)) {
         document.body.setAttribute('data-theme', 'dark');
         document.querySelector('.theme-toggle').textContent = '☀️';
       }
+      // 渲染标签和文章
       renderTags();
       renderPosts();
     })();
+
+    // 使函数全局可用
+    window.showPage = showPage;
+    window.filterByTag = filterByTag;
+    window.toggleTheme = toggleTheme;
+    window.showPostDetail = showPostDetail;
+    window.goBack = goBack;
   </script>
 </body>
 </html>
+```
