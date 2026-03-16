@@ -287,7 +287,7 @@
       display:none !important;
     }
 
-    /* ----- 音乐播放器样式 (右下角悬浮) ----- */
+    /* ----- 音乐播放器样式 (右下角悬浮，静态写入) ----- */
     #music-player-container {
       position: fixed;
       bottom: 20px;
@@ -299,7 +299,8 @@
       transition: all 0.3s ease;
       opacity: 0.95;
       border: 1px solid var(--border);
-      pointer-events: auto; /* 确保可以点击 */
+      pointer-events: auto;
+      background: var(--white); /* 适配深色模式 */
     }
     #music-player-container:hover {
       opacity: 1;
@@ -426,8 +427,19 @@
     </footer>
   </div>
 
-  <!-- 音乐播放器容器 (独立于主内容，始终显示) -->
-  <div id="music-player-container"></div>
+  <!-- 音乐播放器容器 (静态写入，确保稳定显示) -->
+  <div id="music-player-container">
+    <iframe 
+      src="https://music.163.com/outchain/player?type=2&id=347230&auto=0&height=66" 
+      width="330" 
+      height="86" 
+      frameborder="no" 
+      border="0" 
+      marginwidth="0" 
+      marginheight="0"
+      allow="autoplay">
+    </iframe>
+  </div>
 
   <script>
     // ----- 文章数据（美丽新世界感悟已替换）-----
@@ -747,27 +759,6 @@
     resizeCanvas();
     animatePetals();
 
-    // ----- 初始化音乐播放器 (网易云外链) -----
-    function initMusicPlayer() {
-      const container = document.getElementById('music-player-container');
-      if (!container) return;
-      
-      // 创建iframe元素
-      const iframe = document.createElement('iframe');
-      // 网易云音乐外链 - 周杰伦《晴天》单曲播放器 (自动播放关闭，用户需手动点击)
-      // 参数说明：type=2 表示单曲，id=347230 是《晴天》的ID，auto=0 不自动播放，height=86 标准高度
-      iframe.src = '//music.163.com/outchain/player?type=2&id=347230&auto=0&height=66';
-      iframe.width = '330';
-      iframe.height = '86';
-      iframe.frameBorder = 'no';
-      iframe.border = '0';
-      iframe.marginWidth = '0';
-      iframe.marginHeight = '0';
-      iframe.allow = 'autoplay'; // 允许自动播放（但浏览器可能仍需用户交互）
-      
-      container.appendChild(iframe);
-    }
-
     // ----- 初始化 -----
     (function init() {
       const savedTheme = localStorage.getItem('theme');
@@ -786,9 +777,6 @@
 
       // 检查昵称，控制弹窗与主内容显示
       checkNickname();
-
-      // 初始化音乐播放器 (始终加载)
-      initMusicPlayer();
     })();
 
     // 暴露全局函数
