@@ -415,6 +415,134 @@
     .clear-date-btn:hover {
       color: #c38e5a;
     }
+
+    /* ----- 设置页面卡片样式 ----- */
+    .settings-card {
+      background: var(--white);
+      border-radius: 20px;
+      padding: 2rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 2px 16px var(--shadow);
+    }
+    .settings-card h3 {
+      font-size: 1.4rem;
+      font-weight: 300;
+      margin-bottom: 1.5rem;
+      color: var(--accent);
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 0.5rem;
+    }
+    .lang-switch {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+    }
+    .lang-btn {
+      padding: 0.6rem 2rem;
+      border-radius: 40px;
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      cursor: pointer;
+      transition: all 0.2s;
+      font-size: 1rem;
+    }
+    .lang-btn.active {
+      background: var(--pink);
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+    .lang-btn:hover {
+      background: var(--pink);
+    }
+    /* 留言板样式 */
+    .guestbook-form {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+    .guestbook-input, .guestbook-textarea {
+      padding: 0.8rem 1rem;
+      border-radius: 30px;
+      border: 1px solid var(--border);
+      background: var(--bg2);
+      font-family: inherit;
+      font-size: 0.95rem;
+      color: var(--text);
+      outline: none;
+    }
+    .guestbook-textarea {
+      border-radius: 20px;
+      resize: vertical;
+    }
+    .guestbook-submit {
+      background: var(--accent);
+      color: white;
+      border: none;
+      padding: 0.8rem;
+      border-radius: 40px;
+      cursor: pointer;
+      transition: background 0.2s;
+      font-size: 1rem;
+    }
+    .guestbook-submit:hover {
+      background: #c38e5a;
+    }
+    .guestbook-list {
+      max-height: 300px;
+      overflow-y: auto;
+      border-top: 1px solid var(--border);
+      padding-top: 1rem;
+    }
+    .guestbook-item {
+      background: var(--bg2);
+      border-radius: 16px;
+      padding: 1rem;
+      margin-bottom: 1rem;
+    }
+    .guestbook-meta {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.8rem;
+      color: var(--text2);
+      margin-bottom: 0.5rem;
+    }
+    .guestbook-name {
+      font-weight: 500;
+      color: var(--accent);
+    }
+    .guestbook-content {
+      line-height: 1.6;
+    }
+    .clear-guestbook {
+      display: inline-block;
+      margin-top: 0.5rem;
+      font-size: 0.8rem;
+      color: var(--accent);
+      cursor: pointer;
+      text-decoration: underline;
+    }
+    /* 简介卡片 */
+    .profile-content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1.5rem;
+    }
+    .profile-avatar {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--pink), var(--accent));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 3rem;
+    }
+    .profile-text {
+      text-align: center;
+      line-height: 1.8;
+    }
   </style>
 </head>
 <body>
@@ -449,8 +577,9 @@
     <header>
       <a class="logo" onclick="showPage('home')">lumiere<span>va</span></a>
       <nav>
-        <a onclick="showPage('home')">首页</a>
-        <a onclick="showPage('archive')">归档</a>
+        <a onclick="showPage('home')" id="nav-home">首页</a>
+        <a onclick="showPage('archive')" id="nav-archive">归档</a>
+        <a onclick="showPage('settings')" id="nav-settings">设置</a>
         <span class="theme-toggle" onclick="toggleTheme()">🌙</span>
       </nav>
     </header>
@@ -460,7 +589,7 @@
         <div class="hero">
           <div class="hero-avatar">✨</div>
           <h1>lumiereva</h1>
-          <p>记录生活的闪光时刻</p>
+          <p id="hero-subtitle">记录生活的闪光时刻</p>
           <div class="social-links">
             <a href="#" title="GitHub">🐙</a>
             <a href="#" title="Twitter">🐦</a>
@@ -476,12 +605,12 @@
         <div class="tags-filter" id="tagsFilter"></div>
         <div class="posts" id="posts"></div>
         <div class="archive-link">
-          <a onclick="showPage('archive')">📅 查看全部文章</a>
+          <a onclick="showPage('archive')" id="view-all">📅 查看全部文章</a>
         </div>
       </div>
       <!-- 归档页 -->
       <div id="archive" class="page">
-        <h2 style="text-align:center;margin-bottom:2rem;font-weight:300;letter-spacing:.1em">📚 所有文章</h2>
+        <h2 style="text-align:center;margin-bottom:2rem;font-weight:300;letter-spacing:.1em" id="archive-title">📚 所有文章</h2>
         <!-- 归档日历容器 -->
         <div id="calendar-container" class="calendar-wrapper"></div>
         <!-- 清除日期筛选按钮（隐藏） -->
@@ -494,9 +623,54 @@
         </div>
         <div class="posts" id="archivePosts"></div>
         <div style="text-align:center;margin-top:2rem">
-          <a onclick="showPage('home')">← 返回首页</a>
+          <a onclick="showPage('home')" id="back-home">← 返回首页</a>
         </div>
       </div>
+      <!-- 设置页 -->
+      <div id="settings" class="page">
+        <h2 style="text-align:center;margin-bottom:2rem;font-weight:300;letter-spacing:.1em" id="settings-title">⚙️ 设置</h2>
+        
+        <!-- 语言切换卡片 -->
+        <div class="settings-card">
+          <h3 id="lang-card-title">🌐 语言切换</h3>
+          <div class="lang-switch">
+            <span class="lang-btn" id="lang-zh" onclick="setLanguage('zh')">中文</span>
+            <span class="lang-btn" id="lang-en" onclick="setLanguage('en')">English</span>
+          </div>
+        </div>
+
+        <!-- 留言板卡片 -->
+        <div class="settings-card">
+          <h3 id="guestbook-title">💬 留言板</h3>
+          <div class="guestbook-form">
+            <input type="text" id="guestbook-name" class="guestbook-input" placeholder="你的名字 / Your name">
+            <textarea id="guestbook-message" class="guestbook-textarea" rows="3" placeholder="说点什么..."></textarea>
+            <button class="guestbook-submit" onclick="addGuestbookMessage()" id="guestbook-submit-btn">提交留言</button>
+          </div>
+          <div id="guestbook-list" class="guestbook-list">
+            <!-- 留言动态加载 -->
+          </div>
+          <span class="clear-guestbook" onclick="clearGuestbook()" id="clear-guestbook-btn">清除所有留言</span>
+        </div>
+
+        <!-- 我的简介卡片 -->
+        <div class="settings-card">
+          <h3 id="profile-title">👤 我的简介</h3>
+          <div class="profile-content">
+            <div class="profile-avatar">✨</div>
+            <div class="profile-text" id="profile-text">
+              <p>热爱生活与思考，用文字记录日常。</p>
+              <p>喜欢哲学、文学和一切美好事物。</p>
+              <p>📮 lumiereva@example.com</p>
+            </div>
+          </div>
+        </div>
+
+        <div style="text-align:center;margin-top:2rem">
+          <a onclick="showPage('home')" id="back-home-from-settings">← 返回首页</a>
+        </div>
+      </div>
+
       <!-- 文章详情页 -->
       <div id="post-detail" class="page">
         <div style="max-width:800px; margin:0 auto;">
@@ -518,33 +692,105 @@
       </div>
     </main>
     <footer>
-      <p>© 2026 <a onclick="showPage('home')">lumiereva</a> · 用心记录每一天</p>
+      <p>© 2026 <a onclick="showPage('home')">lumiereva</a> · <span id="footer-text">用心记录每一天</span></p>
     </footer>
   </div>
 
   <script>
-    // ----- 文章数据（修正了日期格式）-----
-    const posts = [
+    // ----- 文章数据（中文）-----
+    const postsZh = [
       {title:"今天天气真好",date:"2026-03-15",tags:["日常"],excerpt:"阳光明媚，适合出门散步。"},
       {title:"学习新技能的第二天",date:"2026-03-14",tags:["学习","成长"],excerpt:"今天学会了如何使用 GitHub Pages，建立了自己的博客。"},
       {title:"关于未来的一些思考",date:"2026-03-13",tags:["思考"],excerpt:"人生总是充满选择，重要的是勇敢迈出第一步。"},
       {title:"一部好看的电影推荐",date:"2026-03-12",tags:["推荐","电影"],excerpt:"最近看了一部很棒的电影，讲述了一个关于梦想的故事。"},
-      {title:"美食记录：自制提拉米苏",date:"2026-03-04",tags:["美食"],excerpt:"第n次尝试做甜品，虽然卖相一般但味道还不错！"}, // 修正为04
+      {title:"美食记录：自制提拉米苏",date:"2026-03-04",tags:["美食"],excerpt:"第n次尝试做甜品，虽然卖相一般但味道还不错！"},
       {title:"春天的味道",date:"2026-03-10",tags:["日常","季节"],excerpt:"春天来了，万物复苏，花儿都开了。"},
       {
         title:"读书笔记：《美丽新世界》",
         date:"2026-03-09",
         tags:["阅读"],
         excerpt: "说实话，重读《美丽新世界》时，我常有种恍惚感。赫胥黎1932年写下的这部“反乌托邦”，如今读来却像一本关于当下的纪实文学。只是那些预言换了套更温和的皮囊，悄悄渗透进我们的日常。\n\n你看新世界里的“阶层设定”——阿尔法、贝塔、伽玛、德尔塔，从试管里就被决定了命运。这听起来遥远吗？可看看我们身边：从幼儿园开始的“不要输在起跑线上”，到学区房、补习班、各种素质教育的包装，不正是另一种版本的“预设命运”吗？只是我们不再用化学方法，而是用教育资源的不公、家庭背景的差异，悄然完成着同样的分流。更可怕的是，这套机制运行得如此顺滑，以至于处在底层的孩子，也常常真心相信自己“不是读书的料”，像极了新世界里那些热爱自己搬运工作的德尔塔。\n\n再说说“索麻”。新世界里的人们遇到任何不快，就吞下一片索麻，立刻神清气爽。我们呢？emo了，刷两个小时短视频；焦虑了，打开购物app下一单；空虚了，找个综艺哈哈哈。那些算法精准推送的内容，那些设计得让人上瘾的游戏，那些永远买不完的“种草好物”，不就是我们这个时代的索麻吗？它们同样高效，同样无副作用（表面上看），同样能让你快速逃离负面情绪。只是当你放下手机，那种更深的空洞感，那种说不清的焦虑，是不是比之前更加汹涌？\n\n新世界里“每个人都属于所有人”，爱情被消解为即时满足的肉体游戏。这种景象，在今天的约会文化和社交媒体上，似乎正在加速上演。左滑右滑的速配，三天确定关系的“快餐爱情”，朋友圈里精心修饰的“幸福人设”。我们拥有了前所未有的社交广度，却可能正在失去爱的深度——那种需要时间、需要忍耐、需要为一个人难过流泪的能力。我常问年轻的学生：你还愿意为喜欢的人等待吗？你还愿意经历那种不确定的煎熬吗？大部分人摇头。不是他们不想，是这个时代已经不太允许“低效率”的情感投入了。\n\n还有消费主义对灵魂的殖民。新世界里的人们被不断灌输：消费就是幸福，更新换代就是进步。这不就是我们今天的双十一、618，和那些永远在催促你“对自己好一点”的广告吗？商家不仅卖给你商品，还卖给你一种身份认同——你喝什么咖啡，穿什么牌子，用什么手机，都在定义“你是谁”。于是我们不停地买，不停地换，好像拥有了更多，却在某个深夜突然发现，自己已经很久没有为什么事情真正感动过了。\n\n写这些，不是为了批判什么。作为大学教授，我也在用智能手机，也在刷短视频，也会在疲惫时用娱乐放松自己。赫胥黎的伟大，不在于他提供了某种道德高地让我们俯视众生，而在于他提醒我们：当一种生活方式让人失去感受痛苦的能力，它同时也让人失去了感受深刻的能力。\n\n我想起课堂上一个学生问：“老师，如果快乐很容易得到，我们为什么还要选择艰难？”这是个好问题。我的回答是：因为那些需要付出代价才能获得的东西——真正的爱、深刻的思考、持久的创造——恰恰是定义我们为“人”的东西。快乐可以是目的，但不应该是唯一目的。\n\n新世界里的人们从未真正痛苦过，所以他们也不知道什么是真正的幸福。他们只有愉悦，没有喜悦；只有满足，没有充盈。就像一幅画只有亮色，最终留下的是一片苍白。\n\n所以，当我们享受着科技带来的便利，消费带来的快感，娱乐带来的轻松时，或许可以偶尔停下来，问问自己：我是不是正在为了舒适，悄悄交出什么更重要的东西？比如感受的深度，比如思考的能力，比如那种即使痛苦也要真实的勇气。\n\n赫胥黎的警示，在今天显得尤为珍贵。不是因为他预言了一个可怕的世界，而是因为他让我们看见，那个世界可能正披着“美好生活”的外衣，一点一点成为我们的日常。而对抗它的方式，也许只是保持一份清醒——清醒地选择自己的痛苦，清醒地承受生活的重量，清醒地爱，清醒地活。\n\n这听起来不够轻松，甚至有些沉重。但你知道吗？能够感到沉重的人，至少还没有被彻底麻醉。"
+      },
+      {
+        title:"今日小记",
+        date:"2026-03-16",
+        tags:["思考"],
+        excerpt: "独处既是孤独也是自由。走在无人的街道上，看着此刻的冷清和静谧，常常会去联想它热闹的样子。破坏的布满灰尘的院子或许也曾经是干净而洋溢着温暖的家，桔缩盘虬的老树或许也曾生意盎然。永恒总是谎言，唯有变化才是真理。纵观历史便知，曾经的高墻深院又有多少能跨越时间呢？最后都不过成了断壁残垣，承载无数时光无情，世异时移的哀叹。思索着时时刻刻无处不在的变化，不免想到一个有意思的问题：此刻的我和过去的我是同一个我吗？看着花开花谢，潮起潮落，我已了然于心。我无时无刻不在变化之中，命运推着我从出生走向死亡，一刻不停。明日的一切早在昨日就已经埋下厌，只是今日的我不可而知罢了。我从来就不是静态的：身形相貌这些外在的变化容易觉察，思想心绪这些内在的变化却是巧然无声的。既然我时时刻刻都在发生变化，又何必为过去的幼稚、愚蠢神伤呢？既然明日的一切都由昨日的一切所决定，那便任凭树叶掉落，雨水落下吧。活好当下的生活，就是对过去最好的总结和对未来最好的铺垫。我与我周旋良久，宁作我。"
       }
     ];
+    // 英文文章（简单复制中文，可自行修改）
+    const postsEn = postsZh.map(p => ({
+      ...p,
+      title: p.title, // 保持中文标题，或您可自行翻译
+      excerpt: p.excerpt // 保持中文内容
+    }));
+
+    // ----- 语言文本资源 -----
+    const translations = {
+      zh: {
+        'nav-home': '首页',
+        'nav-archive': '归档',
+        'nav-settings': '设置',
+        'hero-subtitle': '记录生活的闪光时刻',
+        'search-placeholder': '搜索文章...',
+        'view-all': '📅 查看全部文章',
+        'archive-title': '📚 所有文章',
+        'back-home': '← 返回首页',
+        'settings-title': '⚙️ 设置',
+        'lang-card-title': '🌐 语言切换',
+        'guestbook-title': '💬 留言板',
+        'profile-title': '👤 我的简介',
+        'guestbook-name-placeholder': '你的名字',
+        'guestbook-message-placeholder': '说点什么...',
+        'guestbook-submit': '提交留言',
+        'clear-guestbook': '清除所有留言',
+        'footer-text': '用心记录每一天',
+        'back-home-from-settings': '← 返回首页',
+        'reading-time': '预计阅读时间',
+        'minutes': '分钟',
+        'words': '字',
+        'clear-date': '✕ 清除日期筛选',
+        'all': '全部',
+      },
+      en: {
+        'nav-home': 'Home',
+        'nav-archive': 'Archive',
+        'nav-settings': 'Settings',
+        'hero-subtitle': 'Recording sparkling moments',
+        'search-placeholder': 'Search articles...',
+        'view-all': '📅 View All',
+        'archive-title': '📚 All Articles',
+        'back-home': '← Back to Home',
+        'settings-title': '⚙️ Settings',
+        'lang-card-title': '🌐 Language',
+        'guestbook-title': '💬 Guestbook',
+        'profile-title': '👤 About Me',
+        'guestbook-name-placeholder': 'Your name',
+        'guestbook-message-placeholder': 'Say something...',
+        'guestbook-submit': 'Submit',
+        'clear-guestbook': 'Clear all messages',
+        'footer-text': 'Record every day with heart',
+        'back-home-from-settings': '← Back to Home',
+        'reading-time': 'Reading time',
+        'minutes': 'min',
+        'words': 'words',
+        'clear-date': '✕ Clear date filter',
+        'all': 'All',
+      }
+    };
+
+    // ----- 当前语言 -----
+    let lang = 'zh';
+
+    // ----- 根据语言选择文章数据（文章内容保持中文，如需英文可自行修改postsEn）-----
+    let posts = lang === 'zh' ? postsZh : postsEn; // 实际内容仍为中文，仅界面切换
 
     // ----- 全局变量 -----
     const allTags = [...new Set(posts.flatMap(p => p.tags))];
-    let currentTag = null;          // 当前选中的标签
-    let searchTerm = '';            // 当前搜索词
-    let lastPage = 'home';          // 返回用
-    let currentDate = null;         // 新增：当前筛选的日期 (YYYY-MM-DD)
+    let currentTag = null;
+    let searchTerm = '';
+    let lastPage = 'home';
+    let currentDate = null;
 
     // DOM 元素
     const searchHome = document.getElementById('search-home');
@@ -565,10 +811,50 @@
     const submitBtn = document.getElementById('nickname-submit');
     const mainContent = document.getElementById('main-content');
 
+    // ----- 更新界面文字（根据当前语言）-----
+    function updateUILanguage() {
+      document.getElementById('nav-home').innerText = translations[lang]['nav-home'];
+      document.getElementById('nav-archive').innerText = translations[lang]['nav-archive'];
+      document.getElementById('nav-settings').innerText = translations[lang]['nav-settings'];
+      document.getElementById('hero-subtitle').innerText = translations[lang]['hero-subtitle'];
+      searchHome.placeholder = translations[lang]['search-placeholder'];
+      searchArchive.placeholder = translations[lang]['search-placeholder'];
+      document.getElementById('view-all').innerText = translations[lang]['view-all'];
+      document.getElementById('archive-title').innerText = translations[lang]['archive-title'];
+      document.getElementById('back-home').innerText = translations[lang]['back-home'];
+      document.getElementById('settings-title').innerText = translations[lang]['settings-title'];
+      document.getElementById('lang-card-title').innerText = translations[lang]['lang-card-title'];
+      document.getElementById('guestbook-title').innerText = translations[lang]['guestbook-title'];
+      document.getElementById('profile-title').innerText = translations[lang]['profile-title'];
+      document.getElementById('guestbook-name').placeholder = translations[lang]['guestbook-name-placeholder'];
+      document.getElementById('guestbook-message').placeholder = translations[lang]['guestbook-message-placeholder'];
+      document.getElementById('guestbook-submit-btn').innerText = translations[lang]['guestbook-submit'];
+      document.getElementById('clear-guestbook-btn').innerText = translations[lang]['clear-guestbook'];
+      document.getElementById('footer-text').innerText = translations[lang]['footer-text'];
+      document.getElementById('back-home-from-settings').innerText = translations[lang]['back-home-from-settings'];
+      if (clearDateBtn) clearDateBtn.innerText = translations[lang]['clear-date'];
+      // 更新语言按钮激活状态
+      document.getElementById('lang-zh').classList.toggle('active', lang === 'zh');
+      document.getElementById('lang-en').classList.toggle('active', lang === 'en');
+      // 重新渲染标签（标签文本本身不变，但“全部”按钮需要更新）
+      renderTags(currentTag);
+      // 重新渲染文章列表（确保界面更新）
+      renderPosts();
+      // 重新渲染日历（星期几等文字？日历星期是中文固定，但可以保持不变，或者以后根据语言切换星期）
+    }
+
+    // ----- 切换语言 -----
+    window.setLanguage = function(l) {
+      if (l === lang) return;
+      lang = l;
+      posts = lang === 'zh' ? postsZh : postsEn; // 切换文章数据源（内容不变）
+      updateUILanguage();
+    };
+
     // ----- 打字机效果函数 -----
     function typeWriter(text, element, speed, callback) {
       let i = 0;
-      element.innerHTML = ''; // 清空
+      element.innerHTML = '';
       function typing() {
         if (i < text.length) {
           element.innerHTML += text.charAt(i);
@@ -648,12 +934,11 @@
 
     // ----- 阅读时间计算 -----
     function calculateReadingTime(text) {
-      // 去除HTML标签，统计中文字符数（粗略）
       const plainText = text.replace(/<[^>]*>/g, '');
       const chineseChars = plainText.match(/[\u4e00-\u9fa5]/g) || [];
       const wordCount = chineseChars.length;
       const minutes = Math.max(1, Math.ceil(wordCount / 300));
-      return `预计阅读时间：${minutes} 分钟 · ${wordCount} 字`;
+      return `${translations[lang]['reading-time']}：${minutes} ${translations[lang]['minutes']} · ${wordCount} ${translations[lang]['words']}`;
     }
 
     // ----- 更新文章列表（增加日期筛选）-----
@@ -682,12 +967,11 @@
           <h2 class="post-title">${p.title}</h2>
           <p class="post-excerpt">${p.excerpt.replace(/\n/g, '<br>')}</p>
         </article>
-      `).join('') || '<p style="text-align:center; color:var(--text2); padding:2rem;">没有找到相关文章</p>';
+      `).join('') || '<p style="text-align:center; color:var(--text2); padding:2rem;">' + (lang === 'zh' ? '没有找到相关文章' : 'No articles found') + '</p>';
 
       document.getElementById('posts').innerHTML = html;
       document.getElementById('archivePosts').innerHTML = html;
 
-      // 控制清除日期按钮显示
       if (clearDateBtn) {
         clearDateBtn.style.display = currentDate ? 'block' : 'none';
       }
@@ -697,23 +981,22 @@
     function clearDateFilter() {
       currentDate = null;
       renderPosts();
-      // 更新日历高亮
       renderCalendar(currentYear, currentMonth);
     }
 
     // ----- 标签渲染 -----
     function renderTags(activeTag = null) {
       const container = document.getElementById('tagsFilter');
-      container.innerHTML = `<span class="tag-filter ${!activeTag ? 'active' : ''}" onclick="filterByTag(null)">全部</span>` +
+      container.innerHTML = `<span class="tag-filter ${!activeTag ? 'active' : ''}" onclick="filterByTag(null)">${translations[lang]['all']}</span>` +
         allTags.map(tag => `<span class="tag-filter ${activeTag === tag ? 'active' : ''}" onclick="filterByTag('${tag}')">${tag}</span>`).join('');
     }
 
     function filterByTag(tag) {
       currentTag = tag;
-      currentDate = null; // 切换标签时清除日期筛选
+      currentDate = null;
       renderTags(tag);
       renderPosts();
-      renderCalendar(currentYear, currentMonth); // 刷新日历高亮
+      renderCalendar(currentYear, currentMonth);
     }
 
     // ----- 搜索处理 -----
@@ -721,7 +1004,7 @@
       const value = e.target.value;
       searchTerm = value;
       syncSearchInputs(value);
-      currentDate = null; // 搜索时清除日期筛选
+      currentDate = null;
       renderPosts();
       renderCalendar(currentYear, currentMonth);
     }
@@ -751,10 +1034,12 @@
       if (pageId === 'home' || pageId === 'archive') {
         lastPage = pageId;
         syncSearchInputs(searchTerm);
-        // 如果进入归档页，渲染日历
         if (pageId === 'archive') {
           renderCalendar(currentYear, currentMonth);
         }
+      } else if (pageId === 'settings') {
+        // 进入设置页时，刷新留言板显示
+        renderGuestbook();
       }
       window.scrollTo(0, 0);
     }
@@ -774,7 +1059,6 @@
       document.getElementById('detail-title').innerText = article.title;
       document.getElementById('detail-content').innerHTML = article.excerpt.replace(/\n/g, '<br>');
       
-      // 显示阅读时间
       readingTimeDiv.innerText = calculateReadingTime(article.excerpt);
 
       const isBraveNewWorld = (article.title === "读书笔记：《美丽新世界》");
@@ -878,19 +1162,17 @@
 
     // ----- 归档日历逻辑 -----
     let currentYear = 2026;
-    let currentMonth = 2; // 0-index, 3月
+    let currentMonth = 2; // 3月
 
     function renderCalendar(year, month) {
       const container = document.getElementById('calendar-container');
       if (!container) return;
 
-      // 获取该月第一天和最后一天
       const firstDay = new Date(year, month, 1);
       const lastDay = new Date(year, month + 1, 0);
       const daysInMonth = lastDay.getDate();
-      const startWeekday = firstDay.getDay(); // 0 = 周日
+      const startWeekday = firstDay.getDay();
 
-      // 构建日期集合 (用于高亮)
       const postDates = new Set(posts.map(p => p.date));
 
       let html = `
@@ -907,12 +1189,10 @@
         <div class="calendar-days">
       `;
 
-      // 填充空白
       for (let i = 0; i < startWeekday; i++) {
         html += '<div class="calendar-day empty"></div>';
       }
 
-      // 填充日期
       for (let d = 1; d <= daysInMonth; d++) {
         const dateStr = `${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
         const hasPost = postDates.has(dateStr);
@@ -924,18 +1204,16 @@
       container.innerHTML = html;
     }
 
-    // 选择日期
     window.selectDate = function(dateStr) {
       currentDate = dateStr;
-      currentTag = null; // 清除标签筛选
-      searchTerm = '';   // 清除搜索
+      currentTag = null;
+      searchTerm = '';
       syncSearchInputs('');
       renderTags(null);
       renderPosts();
-      renderCalendar(currentYear, currentMonth); // 更新高亮
+      renderCalendar(currentYear, currentMonth);
     };
 
-    // 改变月份
     window.changeMonth = function(delta) {
       let newMonth = currentMonth + delta;
       let newYear = currentYear;
@@ -946,11 +1224,77 @@
         newMonth = 0;
         newYear++;
       }
-      // 简单起见，只允许2026年范围
       if (newYear === 2026 && newMonth >= 0 && newMonth <= 11) {
         currentYear = newYear;
         currentMonth = newMonth;
         renderCalendar(currentYear, currentMonth);
+      }
+    };
+
+    // ----- 留言板功能 (基于localStorage) -----
+    function loadGuestbookMessages() {
+      const stored = localStorage.getItem('guestbook_messages');
+      return stored ? JSON.parse(stored) : [];
+    }
+
+    function saveGuestbookMessages(messages) {
+      localStorage.setItem('guestbook_messages', JSON.stringify(messages));
+    }
+
+    function renderGuestbook() {
+      const listDiv = document.getElementById('guestbook-list');
+      const messages = loadGuestbookMessages();
+      if (messages.length === 0) {
+        listDiv.innerHTML = '<p style="text-align:center; color:var(--text2);">暂无留言</p>';
+        return;
+      }
+      const html = messages.reverse().map(msg => `
+        <div class="guestbook-item">
+          <div class="guestbook-meta">
+            <span class="guestbook-name">${escapeHtml(msg.name)}</span>
+            <span>${msg.time}</span>
+          </div>
+          <div class="guestbook-content">${escapeHtml(msg.content).replace(/\n/g, '<br>')}</div>
+        </div>
+      `).join('');
+      listDiv.innerHTML = html;
+    }
+
+    function escapeHtml(unsafe) {
+      return unsafe.replace(/[&<>"]/g, function(m) {
+        if (m === '&') return '&amp;';
+        if (m === '<') return '&lt;';
+        if (m === '>') return '&gt;';
+        if (m === '"') return '&quot;';
+        return m;
+      });
+    }
+
+    window.addGuestbookMessage = function() {
+      const nameInput = document.getElementById('guestbook-name');
+      const msgInput = document.getElementById('guestbook-message');
+      const name = nameInput.value.trim();
+      const content = msgInput.value.trim();
+      if (!name || !content) {
+        alert('请填写名字和留言');
+        return;
+      }
+      const messages = loadGuestbookMessages();
+      messages.push({
+        name: name,
+        content: content,
+        time: new Date().toLocaleString()
+      });
+      saveGuestbookMessages(messages);
+      nameInput.value = '';
+      msgInput.value = '';
+      renderGuestbook();
+    };
+
+    window.clearGuestbook = function() {
+      if (confirm('确定清除所有留言吗？')) {
+        localStorage.removeItem('guestbook_messages');
+        renderGuestbook();
       }
     };
 
@@ -961,6 +1305,8 @@
         document.body.setAttribute('data-theme', 'dark');
         document.querySelector('.theme-toggle').textContent = '☀️';
       }
+      // 初始化语言
+      updateUILanguage();
       renderTags();
       renderPosts();
 
@@ -970,6 +1316,7 @@
       clearArchive.addEventListener('click', clearSearch);
 
       checkNickname();
+      // 预加载留言板（但此时设置页可能未显示，等显示时再渲染）
     })();
 
     // 暴露全局函数
