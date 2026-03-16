@@ -49,6 +49,28 @@
     .page.active{display:block}
     @keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
     .post-card{animation:fadeIn .4s ease-out}
+    /* 新增文章详情页样式 */
+    .post-detail-page {
+      background: var(--white);
+      border-radius: 20px;
+      padding: 2rem;
+      box-shadow: 0 2px 20px var(--shadow);
+    }
+    .post-detail-title {
+      font-size: 1.8rem;
+      font-weight: 400;
+      margin-bottom: 1rem;
+      line-height: 1.4;
+    }
+    .post-detail-content {
+      margin-top: 2rem;
+      line-height: 1.9;
+      font-size: 1rem;
+      color: var(--text);
+    }
+    .post-detail-content p {
+      margin-bottom: 1.2rem;
+    }
   </style>
 </head>
 <body>
@@ -91,19 +113,25 @@
   </footer>
   <script>
     const posts = [
-      {title:"今天天气真好",date:"2026-03-15",tags:["日常"],excerpt:"阳光明媚，适合出门散步。"},
-      {title:"学习新技能的第二天",date:"2026-03-14",tags:["学习","成长"],excerpt:"今天学会了如何使用 GitHub Pages，建立了自己的博客。"},
-      {title:"关于未来的一些思考",date:"2026-03-13",tags:["思考"],excerpt:"人生总是充满选择，重要的是勇敢迈出第一步。"},
-      {title:"一部好看的电影推荐",date:"2026-03-12",tags:["推荐","电影"],excerpt:"最近看了一部很棒的电影，讲述了一个关于梦想的故事。"},
-      {title:"美食记录：自制提拉米苏",date:"2026-03-11",tags:["美食"],excerpt:"第一次尝试做甜品，虽然卖相一般但味道还不错！"},
-      {title:"春天的味道",date:"2026-03-10",tags:["日常","季节"],excerpt:"春天来了，万物复苏，花儿都开了。"},
-      {title:"读书感想：《美丽新世界》里的当代倒影",date:"2026-03-09",tags:["阅读"],excerpt:"说实话，重读《美丽新世界》时，我常有种恍惚感。赫胥黎1932年写下的这部“反乌托邦”，如今读来却像一本关于当下的纪实文学。只是那些预言换了套更温和的皮囊，悄悄渗透进我们的日常。
+      {title:"今天天气真好",date:"2026-03-15",tags:["日常"],excerpt:"阳光明媚，适合出门散步。",content:"今天天气真好，适合出门走走。"},
+      {title:"学习新技能的第二天",date:"2026-03-14",tags:["学习","成长"],excerpt:"今天学会了如何使用 GitHub Pages，建立了自己的博客。",content:"学习新技能的第二天，感觉离梦想又近了一步。"},
+      {title:"关于未来的一些思考",date:"2026-03-13",tags:["思考"],excerpt:"人生总是充满选择，重要的是勇敢迈出第一步。",content:"关于未来的思考，总是在深夜格外清晰。"},
+      {title:"一部好看的电影推荐",date:"2026-03-12",tags:["推荐","电影"],excerpt:"最近看了一部很棒的电影，讲述了一个关于梦想的故事。",content:"这部电影真的很值得一看，强烈推荐！"},
+      {title:"美食记录：自制提拉米苏",date:"2026-03-11",tags:["美食"],excerpt:"第一次尝试做甜品，虽然卖相一般但味道还不错！",content:"第一次做提拉米苏，虽然有点翻车，但味道很棒。"},
+      {title:"春天的味道",date:"2026-03-10",tags:["日常","季节"],excerpt:"春天来了，万物复苏，花儿都开了。",content:"春天的气息越来越浓，心情也跟着明媚起来。"},
+      {
+        title:"读书感想：《美丽新世界》里的当代倒影",
+        date:"2026-03-16",
+        tags:["阅读","思考"],
+        excerpt:"浅析赫胥黎笔下的《美丽新世界》与当代社会的映照。",
+        content:`
+说实话，重读《美丽新世界》时，我常有种恍惚感。赫胥黎1932年写下的这部“反乌托邦”，如今读来却像一本关于当下的纪实文学。只是那些预言换了套更温和的皮囊，悄悄渗透进我们的日常。
 
 你看新世界里的“阶层设定”——阿尔法、贝塔、伽玛、德尔塔，从试管里就被决定了命运。这听起来遥远吗？可看看我们身边：从幼儿园开始的“不要输在起跑线上”，到学区房、补习班、各种素质教育的包装，不正是另一种版本的“预设命运”吗？只是我们不再用化学方法，而是用教育资源的不公、家庭背景的差异，悄然完成着同样的分流。更可怕的是，这套机制运行得如此顺滑，以至于处在底层的孩子，也常常真心相信自己“不是读书的料”，像极了新世界里那些热爱自己搬运工作的德尔塔。
 
 再说说“索麻”。新世界里的人们遇到任何不快，就吞下一片索麻，立刻神清气爽。我们呢？emo了，刷两个小时短视频；焦虑了，打开购物app下一单；空虚了，找个综艺哈哈哈。那些算法精准推送的内容，那些设计得让人上瘾的游戏，那些永远买不完的“种草好物”，不就是我们这个时代的索麻吗？它们同样高效，同样无副作用（表面上看），同样能让你快速逃离负面情绪。只是当你放下手机，那种更深的空洞感，那种说不清的焦虑，是不是比之前更加汹涌？
 
-新世界里“每个人都属于所有人”，爱情被消解为即时满足的肉体游戏。这种景象，在今天的约会文化和社交媒体上，似乎正在加速上演。左滑右滑的速配，三天确定关系的“快餐爱情”，朋友圈里精心修饰的“幸福人设”。我们拥有了前所未有的社交广度，却可能正在失去爱的深度——那种需要时间、需要忍耐、需要为一个人难过流泪的能力。我常问年轻的学生：你还愿意为喜欢的人等待吗？你还愿意经历那种不确定的煎熬吗？大部分人摇头。不是他们不想，是这个时代已经不太允许“低效率”的情感投入了。
+新世界里“每个人都属于所有人”，爱情被消解为即时满足的肉体游戏。这种景象，在今天的约会文化和社交媒体上，似乎正在加速上演。左滑右滑的速配，三天确定关系的“快餐爱情”，朋友圈里精心修饰的“幸福人设”。我们拥有了前所未有的社交广度，却可能正在失去爱的深度——那种需要时间、需要忍耐、需要为一个人难过流泪的能力。我常问年轻的学生：“老师，如果快乐很容易得到，我们为什么还要选择艰难？”大部分人摇头。不是他们不想，是这个时代已经不太允许“低效率”的情感投入了。
 
 还有消费主义对灵魂的殖民。新世界里的人们被不断灌输：消费就是幸福，更新换代就是进步。这不就是我们今天的双十一、618，和那些永远在催促你“对自己好一点”的广告吗？商家不仅卖给你商品，还卖给你一种身份认同——你喝什么咖啡，穿什么牌子，用什么手机，都在定义“你是谁”。于是我们不停地买，不停地换，好像拥有了更多，却在某个深夜突然发现，自己已经很久没有为什么事情真正感动过了。
 
@@ -117,13 +145,15 @@
 
 赫胥黎的警示，在今天显得尤为珍贵。不是因为他预言了一个可怕的世界，而是因为他让我们看见，那个世界可能正披着“美好生活”的外衣，一点一点成为我们的日常。而对抗它的方式，也许只是保持一份清醒——清醒地选择自己的痛苦，清醒地承受生活的重量，清醒地爱，清醒地活。
 
-这听起来不够轻松，甚至有些沉重。但你知道吗？能够感到沉重的人，至少还没有被彻底麻醉。"},
+这听起来不够轻松，甚至有些沉重。但你知道吗？能够感到沉重的人，至少还没有被彻底麻醉。`
+      }
     ];
+
     const allTags = [...new Set(posts.flatMap(p => p.tags))];
     function renderTags(activeTag = null) {
       const container = document.getElementById('tagsFilter');
       container.innerHTML = `<span class="tag-filter ${!activeTag ? 'active' : ''}" onclick="filterByTag(null)">全部</span>` +
-        allTags.map(tag => `<span class="tag-filter <equation>{activeTag === tag ? 'active' : ''}" onclick="filterByTag('</equation>{tag}')">${tag}</span>`).join('');
+        allTags.map(tag => `<span class="tag-filter ${activeTag === tag ? 'active' : ''}" onclick="filterByTag('${tag}')">${tag}</span>`).join('');
     }
     let currentTag = null;
     function filterByTag(tag) {
@@ -134,7 +164,7 @@
     function renderPosts() {
       const filtered = currentTag ? posts.filter(p => p.tags.includes(currentTag)) : posts;
       const html = filtered.map(p => `
-        <article class="post-card">
+        <article class="post-card" onclick="showPostDetail('${p.title}')">
           <div class="post-meta">
             <span class="post-date">${p.date}</span>
             <div class="post-tags">${p.tags.map(t => `<span class="post-tag">${t}</span>`).join('')}</div>
@@ -147,6 +177,28 @@
       document.getElementById('archivePosts').innerHTML = html;
     }
     function showPage(pageId) {
+      // 恢复首页默认内容
+      if (pageId === 'home') {
+        document.getElementById('home').innerHTML = `
+          <div class="hero">
+            <div class="hero-avatar">✨</div>
+            <h1>lumiereva</h1>
+            <p>记录生活的闪光时刻</p>
+            <div class="social-links">
+              <a href="#" title="GitHub">🐙</a>
+              <a href="#" title="Twitter">🐦</a>
+              <a href="mailto:hello@lumiereva.com" title="Email">✉️</a>
+            </div>
+          </div>
+          <div class="tags-filter" id="tagsFilter"></div>
+          <div class="posts" id="posts"></div>
+          <div class="archive-link">
+            <a href="#" onclick="showPage('archive')">📅 查看全部文章</a>
+          </div>
+        `;
+        renderTags();
+        renderPosts();
+      }
       document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
       document.getElementById(pageId).classList.add('active');
       window.scrollTo(0, 0);
@@ -156,6 +208,25 @@
       document.body.setAttribute('data-theme', isDark ? 'light' : 'dark');
       document.querySelector('.theme-toggle').textContent = isDark ? '🌙' : '☀️';
       localStorage.setItem('theme', isDark ? 'light' : 'dark');
+    }
+    // 新增：显示文章详情
+    function showPostDetail(postTitle) {
+      const post = posts.find(p => p.title === postTitle);
+      if (!post) return;
+      document.getElementById('home').innerHTML = `
+        <div class="post-detail-page">
+          <h1 class="post-detail-title">${post.title}</h1>
+          <div class="post-meta">
+            <span class="post-date">${post.date}</span>
+            <div class="post-tags">${post.tags.map(t => `<span class="post-tag">${t}</span>`).join('')}</div>
+          </div>
+          <div class="post-detail-content">${post.content.split('\n\n').map(p => `<p>${p}</p>`).join('')}</div>
+          <div class="back-to-home" style="text-align:center;margin-top:2rem;">
+            <a href="#" onclick="showPage('home')" style="color:var(--accent);text-decoration:underline;">← 返回首页</a>
+          </div>
+        </div>
+      `;
+      showPage('home');
     }
     (function() {
       const savedTheme = localStorage.getItem('theme');
