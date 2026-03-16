@@ -46,6 +46,10 @@
     nav a:hover{color:var(--accent)}
     .theme-toggle{cursor:pointer;font-size:1.2rem;padding:.3rem;border-radius:8px;transition:background .3s}
     .theme-toggle:hover{background:var(--pink)}
+    /* 主内容初始隐藏，由弹窗控制显示 */
+    #main-content{
+      display: none;
+    }
     main{max-width:800px;margin:0 auto;padding:8rem 2rem 4rem}
     .hero{text-align:center;margin-bottom:2rem;padding:3rem 1rem;background:var(--white);border-radius:24px;box-shadow:0 4px 24px var(--shadow)}
     .hero-avatar{width:100px;height:100px;border-radius:50%;background:linear-gradient(135deg,var(--pink),#e8d5c4);margin:0 auto 1.5rem;display:flex;align-items:center;justify-content:center;font-size:2.5rem}
@@ -161,80 +165,213 @@
     }
     @keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
     .post-card{animation:fadeIn .4s ease-out}
+
+    /* ----- 高级昵称弹窗样式 ----- */
+    #nickname-overlay{
+      position:fixed;
+      top:0;
+      left:0;
+      width:100%;
+      height:100%;
+      background:rgba(0,0,0,0.3);
+      backdrop-filter:blur(8px);
+      -webkit-backdrop-filter:blur(8px);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      z-index:1000;
+      transition:opacity 0.5s ease;
+    }
+    .nickname-modal{
+      background:var(--white);
+      max-width:420px;
+      width:90%;
+      padding:2.5rem 2rem;
+      border-radius:32px;
+      box-shadow:0 25px 50px -12px rgba(0,0,0,0.25);
+      text-align:center;
+      border:1px solid rgba(255,255,255,0.2);
+      animation:modalFloatIn 0.5s ease-out;
+    }
+    @keyframes modalFloatIn{
+      0%{opacity:0;transform:translateY(20px) scale(0.98);}
+      100%{opacity:1;transform:translateY(0) scale(1);}
+    }
+    .nickname-modal h2{
+      font-size:1.8rem;
+      font-weight:300;
+      letter-spacing:0.1em;
+      margin-bottom:1rem;
+      color:var(--accent);
+    }
+    .nickname-modal p{
+      font-size:0.95rem;
+      color:var(--text2);
+      margin-bottom:2rem;
+      line-height:1.6;
+    }
+    .nickname-input{
+      width:100%;
+      padding:1rem 1.2rem;
+      border-radius:60px;
+      border:1px solid var(--border);
+      background:var(--bg2);
+      font-family:'Zen Maru Gothic',sans-serif;
+      font-size:1rem;
+      color:var(--text);
+      outline:none;
+      transition:box-shadow 0.2s, border-color 0.2s;
+      margin-bottom:1.5rem;
+      text-align:center;
+    }
+    .nickname-input:focus{
+      border-color:var(--accent);
+      box-shadow:0 4px 16px rgba(212,163,115,0.25);
+    }
+    .nickname-btn{
+      background:var(--accent);
+      color:white;
+      border:none;
+      padding:0.9rem 2rem;
+      border-radius:60px;
+      font-size:1rem;
+      font-weight:500;
+      letter-spacing:0.1em;
+      cursor:pointer;
+      transition:transform 0.2s, box-shadow 0.2s, background 0.2s;
+      box-shadow:0 8px 20px rgba(212,163,115,0.3);
+      width:100%;
+    }
+    .nickname-btn:hover{
+      background:#c38e5a;
+      transform:translateY(-2px);
+      box-shadow:0 12px 28px rgba(212,163,115,0.4);
+    }
+    .nickname-greeting{
+      font-size:2.2rem;
+      font-weight:300;
+      color:var(--accent);
+      margin:1rem 0;
+      animation:greetingPop 0.6s ease;
+    }
+    .nickname-greeting small{
+      font-size:1rem;
+      color:var(--text2);
+      display:block;
+      margin-top:0.5rem;
+    }
+    @keyframes greetingPop{
+      0%{opacity:0;transform:scale(0.9);}
+      70%{transform:scale(1.02);}
+      100%{opacity:1;transform:scale(1);}
+    }
+    .hidden{
+      display:none !important;
+    }
+    /* 深色模式适配 */
+    [data-theme="dark"] .nickname-modal{
+      background:var(--white); /* 深色模式下保持卡片为深色背景 */
+      border-color:var(--border);
+    }
+    [data-theme="dark"] .nickname-input{
+      background:var(--bg2);
+      color:var(--text);
+    }
   </style>
 </head>
 <body>
   <!-- 飘落花瓣 canvas (动态元素) -->
   <canvas id="petal-canvas"></canvas>
 
-  <header>
-    <a class="logo" onclick="showPage('home')">lumiere<span>va</span></a>
-    <nav>
-      <a onclick="showPage('home')">首页</a>
-      <a onclick="showPage('archive')">归档</a>
-      <span class="theme-toggle" onclick="toggleTheme()">🌙</span>
-    </nav>
-  </header>
-  <main>
-    <!-- 首页 -->
-    <div id="home" class="page active">
-      <div class="hero">
-        <div class="hero-avatar">✨</div>
-        <h1>lumiereva</h1>
-        <p>记录生活的闪光时刻</p>
-        <div class="social-links">
-          <a href="#" title="GitHub">🐙</a>
-          <a href="#" title="Twitter">🐦</a>
-          <a href="mailto:hello@lumiereva.com" title="Email">✉️</a>
-        </div>
+  <!-- 昵称弹窗 (始终存在，通过JS控制显示/隐藏) -->
+  <div id="nickname-overlay">
+    <div class="nickname-modal" id="nickname-modal-card">
+      <!-- 初始状态：提问 + 输入框 + 按钮 -->
+      <div id="modal-ask">
+        <h2>✨ 我应该怎么称呼你？</h2>
+        <p>What should I call you?</p>
+        <input type="text" id="nickname-input-field" class="nickname-input" placeholder="你的名字 / Your name" autofocus>
+        <button class="nickname-btn" id="nickname-submit">开始 / Enter</button>
       </div>
-      <!-- 首页搜索框 -->
-      <div class="search-wrapper">
-        <span class="search-icon">🔍</span>
-        <input type="text" class="search-input" id="search-home" placeholder="搜索文章...">
-        <button class="search-clear" id="clear-home" style="display:none;">✕</button>
-      </div>
-      <div class="tags-filter" id="tagsFilter"></div>
-      <div class="posts" id="posts"></div>
-      <div class="archive-link">
-        <a onclick="showPage('archive')">📅 查看全部文章</a>
+      <!-- 欢迎状态：隐藏上述，显示greeting -->
+      <div id="modal-greeting" class="hidden">
+        <div class="nickname-greeting" id="greeting-message"></div>
       </div>
     </div>
-    <!-- 归档页 -->
-    <div id="archive" class="page">
-      <h2 style="text-align:center;margin-bottom:2rem;font-weight:300;letter-spacing:.1em">📚 所有文章</h2>
-      <!-- 归档搜索框 -->
-      <div class="search-wrapper">
-        <span class="search-icon">🔍</span>
-        <input type="text" class="search-input" id="search-archive" placeholder="搜索文章...">
-        <button class="search-clear" id="clear-archive" style="display:none;">✕</button>
-      </div>
-      <div class="posts" id="archivePosts"></div>
-      <div style="text-align:center;margin-top:2rem">
-        <a onclick="showPage('home')">← 返回首页</a>
-      </div>
-    </div>
-    <!-- 文章详情页 -->
-    <div id="post-detail" class="page">
-      <div style="max-width:800px; margin:0 auto;">
-        <button class="back-btn" id="detail-backBtn" onclick="goBack()">← 返回</button>
-        <div id="detail-image-container" class="detail-image-container" style="display: none;">
-          <img src="https://i.imgur.com/7XZ8Q0H.jpg" alt="美丽新世界插画 · 机械与玫瑰">
-        </div>
-        <div class="post-card" style="padding:2rem; cursor:default;">
-          <div class="post-meta">
-            <span class="post-date" id="detail-date"></span>
-            <div class="post-tags" id="detail-tags"></div>
+  </div>
+
+  <!-- 主内容（初始隐藏） -->
+  <div id="main-content">
+    <header>
+      <a class="logo" onclick="showPage('home')">lumiere<span>va</span></a>
+      <nav>
+        <a onclick="showPage('home')">首页</a>
+        <a onclick="showPage('archive')">归档</a>
+        <span class="theme-toggle" onclick="toggleTheme()">🌙</span>
+      </nav>
+    </header>
+    <main>
+      <!-- 首页 -->
+      <div id="home" class="page active">
+        <div class="hero">
+          <div class="hero-avatar">✨</div>
+          <h1>lumiereva</h1>
+          <p>记录生活的闪光时刻</p>
+          <div class="social-links">
+            <a href="#" title="GitHub">🐙</a>
+            <a href="#" title="Twitter">🐦</a>
+            <a href="mailto:hello@lumiereva.com" title="Email">✉️</a>
           </div>
-          <h2 class="post-title" id="detail-title"></h2>
-          <div class="post-excerpt" id="detail-content"></div>
+        </div>
+        <!-- 首页搜索框 -->
+        <div class="search-wrapper">
+          <span class="search-icon">🔍</span>
+          <input type="text" class="search-input" id="search-home" placeholder="搜索文章...">
+          <button class="search-clear" id="clear-home" style="display:none;">✕</button>
+        </div>
+        <div class="tags-filter" id="tagsFilter"></div>
+        <div class="posts" id="posts"></div>
+        <div class="archive-link">
+          <a onclick="showPage('archive')">📅 查看全部文章</a>
         </div>
       </div>
-    </div>
-  </main>
-  <footer>
-    <p>© 2026 <a onclick="showPage('home')">lumiereva</a> · 用心记录每一天</p>
-  </footer>
+      <!-- 归档页 -->
+      <div id="archive" class="page">
+        <h2 style="text-align:center;margin-bottom:2rem;font-weight:300;letter-spacing:.1em">📚 所有文章</h2>
+        <!-- 归档搜索框 -->
+        <div class="search-wrapper">
+          <span class="search-icon">🔍</span>
+          <input type="text" class="search-input" id="search-archive" placeholder="搜索文章...">
+          <button class="search-clear" id="clear-archive" style="display:none;">✕</button>
+        </div>
+        <div class="posts" id="archivePosts"></div>
+        <div style="text-align:center;margin-top:2rem">
+          <a onclick="showPage('home')">← 返回首页</a>
+        </div>
+      </div>
+      <!-- 文章详情页 -->
+      <div id="post-detail" class="page">
+        <div style="max-width:800px; margin:0 auto;">
+          <button class="back-btn" id="detail-backBtn" onclick="goBack()">← 返回</button>
+          <div id="detail-image-container" class="detail-image-container" style="display: none;">
+            <img src="https://i.imgur.com/7XZ8Q0H.jpg" alt="美丽新世界插画 · 机械与玫瑰">
+          </div>
+          <div class="post-card" style="padding:2rem; cursor:default;">
+            <div class="post-meta">
+              <span class="post-date" id="detail-date"></span>
+              <div class="post-tags" id="detail-tags"></div>
+            </div>
+            <h2 class="post-title" id="detail-title"></h2>
+            <div class="post-excerpt" id="detail-content"></div>
+          </div>
+        </div>
+      </div>
+    </main>
+    <footer>
+      <p>© 2026 <a onclick="showPage('home')">lumiereva</a> · 用心记录每一天</p>
+    </footer>
+  </div>
+
   <script>
     // ----- 文章数据（美丽新世界感悟已替换）-----
     const posts = [
@@ -258,29 +395,92 @@
     let searchTerm = '';            // 当前搜索词
     let lastPage = 'home';          // 返回用
 
-    // DOM 元素
+    // DOM 元素 (主内容)
     const searchHome = document.getElementById('search-home');
     const searchArchive = document.getElementById('search-archive');
     const clearHome = document.getElementById('clear-home');
     const clearArchive = document.getElementById('clear-archive');
 
+    // 昵称弹窗元素
+    const overlay = document.getElementById('nickname-overlay');
+    const modalAsk = document.getElementById('modal-ask');
+    const modalGreeting = document.getElementById('modal-greeting');
+    const greetingMsg = document.getElementById('greeting-message');
+    const nicknameInput = document.getElementById('nickname-input-field');
+    const submitBtn = document.getElementById('nickname-submit');
+    const mainContent = document.getElementById('main-content');
+
+    // ----- 昵称逻辑 -----
+    function showGreetingAndEnter(name) {
+      // 隐藏提问区，显示欢迎语
+      modalAsk.classList.add('hidden');
+      modalGreeting.classList.remove('hidden');
+      greetingMsg.innerHTML = `hi, ${name} <small>欢迎</small>`;
+
+      // 延迟后关闭弹窗，显示主内容
+      setTimeout(() => {
+        overlay.style.opacity = '0';
+        setTimeout(() => {
+          overlay.classList.add('hidden');
+          mainContent.style.display = 'block'; // 显示主内容
+          // 重新触发花瓣颜色适应（以防主题在弹窗前切换）
+          if (typeof initPetals === 'function') initPetals();
+        }, 500);
+      }, 1500);
+    }
+
+    function handleNicknameSubmit() {
+      let name = nicknameInput.value.trim();
+      if (name === '') {
+        name = '访客'; // 默认
+      }
+      // 存储到 sessionStorage (当前标签页有效)
+      sessionStorage.setItem('nickname', name);
+      showGreetingAndEnter(name);
+    }
+
+    // 检查是否已有昵称 (同一标签页刷新后不再弹窗)
+    function checkNickname() {
+      const savedName = sessionStorage.getItem('nickname');
+      if (savedName) {
+        // 直接进入，不显示弹窗
+        overlay.classList.add('hidden');
+        mainContent.style.display = 'block';
+      } else {
+        // 显示弹窗，隐藏主内容
+        overlay.classList.remove('hidden');
+        overlay.style.opacity = '1';
+        modalAsk.classList.remove('hidden');
+        modalGreeting.classList.add('hidden');
+        mainContent.style.display = 'none';
+        nicknameInput.value = '';
+        nicknameInput.focus();
+      }
+    }
+
+    // 绑定提交事件
+    submitBtn.addEventListener('click', handleNicknameSubmit);
+    nicknameInput.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        handleNicknameSubmit();
+      }
+    });
+
     // ----- 同步两个搜索框的值和清除按钮显示 -----
     function syncSearchInputs(value) {
-      searchHome.value = value;
-      searchArchive.value = value;
-      // 清除按钮显示逻辑
+      if (searchHome) searchHome.value = value;
+      if (searchArchive) searchArchive.value = value;
       if (value.length > 0) {
-        clearHome.style.display = 'block';
-        clearArchive.style.display = 'block';
+        if (clearHome) clearHome.style.display = 'block';
+        if (clearArchive) clearArchive.style.display = 'block';
       } else {
-        clearHome.style.display = 'none';
-        clearArchive.style.display = 'none';
+        if (clearHome) clearHome.style.display = 'none';
+        if (clearArchive) clearArchive.style.display = 'none';
       }
     }
 
     // ----- 更新文章列表（根据 currentTag 和 searchTerm）-----
     function renderPosts() {
-      // 过滤逻辑：标签 + 搜索词
       let filtered = posts;
       if (currentTag) {
         filtered = filtered.filter(p => p.tags.includes(currentTag));
@@ -293,7 +493,6 @@
         );
       }
 
-      // 生成卡片 HTML
       const html = filtered.map(p => `
         <article class="post-card" onclick='showPostDetail("${p.title.replace(/'/g, "\\'")}")'>
           <div class="post-meta">
@@ -344,7 +543,6 @@
       document.getElementById(pageId).classList.add('active');
       if (pageId === 'home' || pageId === 'archive') {
         lastPage = pageId;
-        // 确保搜索框显示正确的值
         syncSearchInputs(searchTerm);
       }
       window.scrollTo(0, 0);
@@ -382,8 +580,7 @@
       document.body.setAttribute('data-theme', isDark ? 'light' : 'dark');
       document.querySelector('.theme-toggle').textContent = isDark ? '🌙' : '☀️';
       localStorage.setItem('theme', isDark ? 'light' : 'dark');
-      // 主题改变时，更新花瓣颜色（通过重新初始化花瓣）
-      initPetals();
+      if (typeof initPetals === 'function') initPetals();
     }
 
     // ----- 飘落花瓣动画 (Canvas) -----
@@ -391,9 +588,8 @@
     let ctx = canvas.getContext('2d');
     let width, height;
     let petals = [];
-    const PETAL_COUNT = 35; // 花瓣数量
+    const PETAL_COUNT = 35;
 
-    // 根据主题获取花瓣颜色数组（半透明）
     function getPetalColors() {
       const isDark = document.body.getAttribute('data-theme') === 'dark';
       if (isDark) {
@@ -403,7 +599,6 @@
       }
     }
 
-    // 初始化花瓣
     function initPetals() {
       petals = [];
       const colors = getPetalColors();
@@ -411,27 +606,25 @@
         petals.push({
           x: Math.random() * width,
           y: Math.random() * height,
-          size: 8 + Math.random() * 15,      // 花瓣大小
-          speedY: 0.3 + Math.random() * 0.7,  // 下落速度
-          speedX: 0.1 + Math.random() * 0.3,  // 水平飘移
+          size: 8 + Math.random() * 15,
+          speedY: 0.3 + Math.random() * 0.7,
+          speedX: 0.1 + Math.random() * 0.3,
           rotation: Math.random() * Math.PI * 2,
           rotSpeed: (Math.random() - 0.5) * 0.02,
           color: colors[Math.floor(Math.random() * colors.length)],
-          swing: Math.random() * 2 // 左右摆动幅度
+          swing: Math.random() * 2
         });
       }
     }
 
-    // 调整canvas尺寸
     function resizeCanvas() {
       width = window.innerWidth;
       height = window.innerHeight;
       canvas.width = width;
       canvas.height = height;
-      initPetals(); // 重新分布花瓣
+      initPetals();
     }
 
-    // 绘制一朵花瓣 (简化版：使用旋转的椭圆)
     function drawPetal(p) {
       ctx.save();
       ctx.translate(p.x, p.y);
@@ -440,7 +633,6 @@
       ctx.ellipse(0, 0, p.size * 0.8, p.size * 0.4, 0, 0, Math.PI * 2);
       ctx.fillStyle = p.color;
       ctx.fill();
-      // 加点细节：中心加深
       ctx.beginPath();
       ctx.ellipse(0, 0, p.size * 0.3, p.size * 0.15, 0, 0, Math.PI * 2);
       ctx.fillStyle = p.color.replace('0.25', '0.4').replace('0.3', '0.5').replace('0.2', '0.3');
@@ -448,35 +640,25 @@
       ctx.restore();
     }
 
-    // 动画循环
     function animatePetals() {
       ctx.clearRect(0, 0, width, height);
-      
       for (let p of petals) {
-        // 移动
         p.y += p.speedY;
-        p.x += Math.sin(Date.now() * 0.001 + p.swing) * 0.2; // 轻微左右摆动
+        p.x += Math.sin(Date.now() * 0.001 + p.swing) * 0.2;
         p.rotation += p.rotSpeed;
-        
-        // 重置超出底部的花瓣
         if (p.y > height + 50) {
           p.y = -30;
           p.x = Math.random() * width;
           p.speedY = 0.3 + Math.random() * 0.7;
         }
-        // 左右边界重置（可选）
         if (p.x > width + 50) p.x = -50;
         if (p.x < -50) p.x = width + 50;
-        
         drawPetal(p);
       }
       requestAnimationFrame(animatePetals);
     }
 
-    // 启动花瓣动画
-    window.addEventListener('resize', () => {
-      resizeCanvas();
-    });
+    window.addEventListener('resize', resizeCanvas);
     resizeCanvas();
     animatePetals();
 
@@ -491,10 +673,13 @@
       renderPosts();
 
       // 搜索框事件
-      searchHome.addEventListener('input', handleSearch);
-      searchArchive.addEventListener('input', handleSearch);
-      clearHome.addEventListener('click', clearSearch);
-      clearArchive.addEventListener('click', clearSearch);
+      if (searchHome) searchHome.addEventListener('input', handleSearch);
+      if (searchArchive) searchArchive.addEventListener('input', handleSearch);
+      if (clearHome) clearHome.addEventListener('click', clearSearch);
+      if (clearArchive) clearArchive.addEventListener('click', clearSearch);
+
+      // 检查昵称，控制弹窗与主内容显示
+      checkNickname();
     })();
 
     // 暴露全局函数
@@ -503,6 +688,7 @@
     window.toggleTheme = toggleTheme;
     window.showPostDetail = showPostDetail;
     window.goBack = goBack;
+    window.initPetals = initPetals; // 供主题切换时调用
   </script>
 </body>
 </html>
